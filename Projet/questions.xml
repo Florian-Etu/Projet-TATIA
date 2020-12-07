@@ -1,0 +1,698 @@
+<dataset id="dbpedia-train">
+<question aggregation="false" answertype="resource" id="4" onlydbo="true">
+<string lang="en">Which river does the Brooklyn Bridge cross?</string>
+<string lang="de">Welchen Fluss überspannt die Brooklyn Bridge?</string>
+<string lang="es">¿Por qué río cruza la Brooklyn Bridge?</string>
+<string lang="it">Quale fiume attraversa il ponte di Brooklyn?</string>
+<string lang="fr">
+Quelle cours d'eau est traversé par le pont de Brooklyn?
+</string>
+<string lang="nl">Welke rivier overspant de Brooklyn Bridge?</string>
+<keywords lang="en">river, cross, Brooklyn Bridge</keywords>
+<keywords lang="de">Fluss, überspannen, Brooklyn Bridge</keywords>
+<keywords lang="es">río, cruza, Brooklyn Bridge</keywords>
+<keywords lang="it">fiume, attraversare, ponte di Brooklyn</keywords>
+<keywords lang="fr">cours d'eau, pont de Brooklyn</keywords>
+<keywords lang="nl">rivier, Brooklyn Bridge, overspant</keywords>
+<query>
+PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?uri WHERE { res:Brooklyn_Bridge dbo:crosses ?uri . }
+</query>
+<answers>
+<answer>
+<uri>http://dbpedia.org/resource/East_River</uri>
+</answer>
+</answers>
+<question aggregation="false" answertype="resource" id="62" onlydbo="true">
+<string lang="en"><![CDATA[Who created Wikipedia?]]></string>
+<string lang="de"><![CDATA[Wer hat Wikipedia gegründet?]]></string>
+<string lang="es"><![CDATA[¿Quién creó Wikipedia?]]></string>
+<string lang="it"><![CDATA[Chi ha creato Wikipedia?]]></string>
+<string lang="fr"><![CDATA[Qui est le créateur de Wikipedia?]]></string>
+<string lang="nl"><![CDATA[Wie heeft Wikipedia opgericht?]]></string>
+<keywords lang="en"><![CDATA[Wikipedia, created]]></keywords>
+<keywords lang="de"><![CDATA[Wikipedia, gründen]]></keywords>
+<keywords lang="es"><![CDATA[Wikipedia, creador]]></keywords>
+<keywords lang="it"><![CDATA[Wikipedia, creatore]]></keywords>
+<keywords lang="fr"><![CDATA[créateur, Wikipedia]]></keywords>
+<keywords lang="nl"><![CDATA[Wikipedia, oprichter]]></keywords>
+<query><![CDATA[PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+SELECT DISTINCT ?uri
+WHERE {
+	res:Wikipedia dbo:author ?uri .
+}]]></query>
+<answers>
+<answer>
+<uri>http://dbpedia.org/resource/Jimmy_Wales</uri>
+</answer>
+<answer>
+<uri>http://dbpedia.org/resource/Larry_Sanger</uri>
+</answer>
+</answers>
+</question>
+<question aggregation="false" answertype="resource" id="10" onlydbo="true">
+<string lang="en"><![CDATA[In which country does the Nile start?]]></string>
+<string lang="de"><![CDATA[In welchem Land entspringt der Nil?]]></string>
+<string lang="es"><![CDATA[¿En qué país nace el Nilo?]]></string>
+<string lang="it"><![CDATA[In quale stato nasce il Nilo?]]></string>
+<string lang="fr"><![CDATA[Dans quel pays commence le Nil?]]></string>
+<string lang="nl"><![CDATA[In welk land ontspringt de Nijl?]]></string>
+<keywords lang="en"><![CDATA[Nile, start, country]]></keywords>
+<keywords lang="de"><![CDATA[Nil, entspringen, Land]]></keywords>
+<keywords lang="es"><![CDATA[Nilo, país, orígen]]></keywords>
+<keywords lang="it"><![CDATA[Nilo, stato, origine]]></keywords>
+<keywords lang="fr"><![CDATA[pays, commence, Nil]]></keywords>
+<keywords lang="nl"><![CDATA[ontspringt, Nijl]]></keywords>
+<query><![CDATA[PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+SELECT DISTINCT ?uri
+WHERE {       
+        res:Nile dbo:sourceCountry ?uri .
+}]]></query>
+<answers>
+<answer>
+<uri>http://dbpedia.org/resource/Ethiopia</uri>
+</answer>
+<answer>
+<uri>http://dbpedia.org/resource/Rwanda</uri>
+</answer>
+</answers>
+</question>
+<question aggregation="false" answertype="resource" id="47" onlydbo="true">
+<string lang="en"><![CDATA[What is the highest place of Karakoram?]]></string>
+<string lang="de"><![CDATA[Was ist die höhchste Stelle des Karakorum?]]></string>
+<string lang="es"><![CDATA[¿Cuál es el punto más alto del Karakorum?]]></string>
+<string lang="it"><![CDATA[Qual è il punto più alto del Karakoram?]]></string>
+<string lang="fr"><![CDATA[Quel est l'endroit le plus haut du Karakoram?]]></string>
+<string lang="nl"><![CDATA[Wat is het hoogste punt van de Karakoram?]]></string>
+<keywords lang="en"><![CDATA[Karakoram, highest place]]></keywords>
+<keywords lang="de"><![CDATA[Karakorum, höchste Stelle]]></keywords>
+<keywords lang="es"><![CDATA[Karakorum, punto más alto]]></keywords>
+<keywords lang="it"><![CDATA[Karakoram, punto più alto]]></keywords>
+<keywords lang="fr"><![CDATA[Karakoram, endroit le plus haut]]></keywords>
+<keywords lang="nl"><![CDATA[hoogste punt, Karakoram]]></keywords>
+<query><![CDATA[PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+SELECT DISTINCT ?uri
+WHERE {       
+        res:Karakoram dbo:highestPlace ?uri .  
+}]]></query>
+<answers>
+<answer>
+<uri>http://dbpedia.org/resource/K2</uri>
+</answer>
+</answers>
+<question aggregation="false" answertype="resource" id="44" onlydbo="false">
+<string lang="en"><![CDATA[Who designed the Brooklyn Bridge?]]></string>
+<string lang="de"><![CDATA[Wer hat die Brooklyn Bridge entworfen?]]></string>
+<string lang="es"><![CDATA[¿Quién diseñó la Brooklyn Bridge?]]></string>
+<string lang="it"><![CDATA[Chi ha progettato il ponte di Brooklyn?]]></string>
+<string lang="fr"><![CDATA[Qui a conçu le pont de Brooklyn?]]></string>
+<string lang="nl"><![CDATA[Wie ontwierp de Brooklyn Bridge?]]></string>
+<keywords lang="en"><![CDATA[Brooklyn Bridge, design]]></keywords>
+<keywords lang="de"><![CDATA[Brooklyn Bridge, entwerfen]]></keywords>
+<keywords lang="es"><![CDATA[diseñador, Brooklyn Bridge]]></keywords>
+<keywords lang="it"><![CDATA[ponte di Brooklyn, progettare]]></keywords>
+<keywords lang="fr"><![CDATA[pont de Brooklyn, conçu]]></keywords>
+<keywords lang="nl"><![CDATA[ontwerp, Brooklyn Bridge]]></keywords>
+<query><![CDATA[PREFIX res: <http://dbpedia.org/resource/>
+PREFIX dbp: <http://dbpedia.org/property/>
+SELECT DISTINCT ?uri 
+WHERE {
+        res:Brooklyn_Bridge dbp:designer ?uri .
+}]]></query>
+<answers>
+<answer>
+<uri>http://dbpedia.org/resource/John_A._Roebling</uri>
+</answer>
+<answer>
+<uri>http://dbpedia.org/resource/John_Augustus_Roebling</uri>
+</answer>
+</answers>
+</question>
+<question aggregation="false" answertype="resource" id="15" onlydbo="true">
+<string lang="en"><![CDATA[Who created Goofy?]]></string>
+<string lang="de"><![CDATA[Wer hat Goofy erfunden?]]></string>
+<string lang="es"><![CDATA[¿Quién es el creador de Goofy?]]></string>
+<string lang="it"><![CDATA[Chi è il creatore di Goofy?]]></string>
+<string lang="fr"><![CDATA[Qui est le créateur de Goofy?]]></string>
+<string lang="nl"><![CDATA[Wie bedacht Goofy?]]></string>
+<keywords lang="en"><![CDATA[created, Goofy]]></keywords>
+<keywords lang="de"><![CDATA[erfinden, Goofy]]></keywords>
+<keywords lang="es"><![CDATA[creador, Goofy]]></keywords>
+<keywords lang="it"><![CDATA[creatore, Goofy]]></keywords>
+<keywords lang="fr"><![CDATA[Goofy, créateur]]></keywords>
+<keywords lang="nl"><![CDATA[bedenker, Goofy]]></keywords>
+<query><![CDATA[PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+SELECT DISTINCT ?uri
+WHERE {
+        res:Goofy dbo:creator ?uri .
+}]]></query>
+<answers>
+<answer>
+<uri>http://dbpedia.org/resource/Art_Babbitt</uri>
+</answer>
+</answers>
+<question aggregation="false" answertype="resource" id="43" onlydbo="true">
+<string lang="en"><![CDATA[Who is the mayor of New York City?]]></string>
+<string lang="de"><![CDATA[Wer ist der Bürgermeister von New York City?]]></string>
+<string lang="es"><![CDATA[¿Quién es el alcalde de la cuidad de Nueva York?]]></string>
+<string lang="it"><![CDATA[Chi è il sindaco della città di New York?]]></string>
+<string lang="fr"><![CDATA[Qui est le maire de New York City?]]></string>
+<string lang="nl"><![CDATA[Wie is de burgemeester van New York?]]></string>
+<keywords lang="en"><![CDATA[New York City, mayor]]></keywords>
+<keywords lang="de"><![CDATA[New York City, Bürgermeister]]></keywords>
+<keywords lang="es"><![CDATA[cuidad de Nueva York, alcalde]]></keywords>
+<keywords lang="it"><![CDATA[città di New York, sindaco]]></keywords>
+<keywords lang="fr"><![CDATA[maire, New York City]]></keywords>
+<keywords lang="nl"><![CDATA[burgemeester, New York]]></keywords>
+<query><![CDATA[PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+SELECT DISTINCT ?uri
+WHERE { 
+        res:New_York_City dbo:leaderName ?uri .
+}]]></query>
+<answers>
+<answer>
+<uri>http://dbpedia.org/resource/Michael_Bloomberg</uri>
+</answer>
+</answers>
+<question aggregation="false" answertype="resource" id="36" onlydbo="false">
+<string lang="en"><![CDATA[Through which countries does the Yenisei river flow?]]></string>
+<string lang="de"><![CDATA[Durch welche Länder fließt der Yenisei?]]></string>
+<string lang="es"><![CDATA[¿Por qué países fluye el río Yenisei?]]></string>
+<string lang="it"><![CDATA[Attraverso quali stati scorre il fiume Yenisei?]]></string>
+<string lang="fr"><![CDATA[Quels sont les pays traversés par l'Ienisseï?]]></string>
+<string lang="nl"><![CDATA[Door welke landen stroomt de Jenisej?]]></string>
+<keywords lang="en"><![CDATA[Yenisei river, flow through, country]]></keywords>
+<keywords lang="de"><![CDATA[Yenisei, fließen, Land]]></keywords>
+<keywords lang="es"><![CDATA[países, fluye, río Yenisei]]></keywords>
+<keywords lang="it"><![CDATA[fiume Yenisei, scorrere attraverso, stato]]></keywords>
+<keywords lang="fr"><![CDATA[Ienisseï, pays traversés]]></keywords>
+<keywords lang="nl"><![CDATA[Jenisej, land, stroomt door]]></keywords>
+<query><![CDATA[PREFIX res: <http://dbpedia.org/resource/>
+PREFIX dbp: <http://dbpedia.org/property/>
+SELECT DISTINCT ?uri 
+WHERE {
+        res:Yenisei_River dbp:country ?uri .
+}]]></query>
+<answers>
+<answer>
+<uri>http://dbpedia.org/resource/Mongolia</uri>
+</answer>
+<answer>
+<uri>http://dbpedia.org/resource/Russia</uri>
+</answer>
+</answers>
+<question aggregation="false" answertype="resource" id="18" onlydbo="false">
+<string lang="en"><![CDATA[Which museum exhibits The Scream by Munch?]]></string>
+<string lang="de"><![CDATA[In welchem Museum ist Der Schrei von Munch ausgestellt?]]></string>
+<string lang="es"><![CDATA[¿En qué museo está expuesto el Grito de Munch?]]></string>
+<string lang="it"><![CDATA[Quale museo è esposto l'Urlo di Munch?]]></string>
+<string lang="fr"><![CDATA[Dans quel musée est exposé Le Cri de Munch?]]></string>
+<string lang="nl"><![CDATA[In welk museum hangt De Schreeuw van Munch?]]></string>
+<keywords lang="en"><![CDATA[museum, Scream, Munch]]></keywords>
+<keywords lang="de"><![CDATA[Museum, Schrei, Munch]]></keywords>
+<keywords lang="es"><![CDATA[museo, El Grito, Munch]]></keywords>
+<keywords lang="it"><![CDATA[museo, l'Urlo, Munch]]></keywords>
+<keywords lang="fr"><![CDATA[musée, le Cri, Munch]]></keywords>
+<keywords lang="nl"><![CDATA[museum, De Schreeuw, Munch]]></keywords>
+<query><![CDATA[PREFIX dbp: <http://dbpedia.org/property/>
+PREFIX res: <http://dbpedia.org/resource/>
+SELECT DISTINCT ?uri
+WHERE {
+	res:The_Scream dbp:museum ?uri .
+}]]></query>
+<answers>
+<answer>
+<uri>http://dbpedia.org/resource/National_Gallery_of_Norway</uri>
+</answer>
+<answer>
+<uri>http://dbpedia.org/resource/National_Gallery,_Oslo</uri>
+</answer>
+</answers>
+<question aggregation="false" answertype="resource" id="21" onlydbo="false">
+<string lang="en"><![CDATA[Which states border Illinois?]]></string>
+<string lang="de"><![CDATA[Welche Staaten grenzen an Illinois?]]></string>
+<string lang="es"><![CDATA[¿Qué estados tienen frontera con Illinois?]]></string>
+<string lang="it"><![CDATA[Con quali stati confina l'Illinois?]]></string>
+<string lang="fr"><![CDATA[Quels sont les états voisins de l'Illinois?]]></string>
+<string lang="nl"><![CDATA[Welke staten grenzen aan Illinois?]]></string>
+<keywords lang="en"><![CDATA[state, border, Illinois]]></keywords>
+<keywords lang="de"><![CDATA[Staat, angrenzen, Illinois]]></keywords>
+<keywords lang="es"><![CDATA[estado, frontera, Illinois]]></keywords>
+<keywords lang="it"><![CDATA[stati, confine, Illinois]]></keywords>
+<keywords lang="fr"><![CDATA[états voisins, Illinois]]></keywords>
+<keywords lang="nl"><![CDATA[staat, grenzen aan, Illinois]]></keywords>
+<query><![CDATA[PREFIX res: <http://dbpedia.org/resource/>
+PREFIX dbp: <http://dbpedia.org/property/>
+SELECT DISTINCT ?uri 
+WHERE {
+      res:Illinois dbp:borderingstates ?uri .
+}]]></query>
+<answers>
+<answer>
+<uri>http://dbpedia.org/resource/Kentucky</uri>
+</answer>
+<answer>
+<uri>http://dbpedia.org/resource/Missouri</uri>
+</answer>
+<answer>
+<uri>http://dbpedia.org/resource/Wisconsin</uri>
+</answer>
+<answer>
+<uri>http://dbpedia.org/resource/Indiana</uri>
+</answer>
+<answer>
+<uri>http://dbpedia.org/resource/Iowa</uri>
+</answer>
+</answers>
+<question aggregation="false" answertype="resource" id="54" onlydbo="true">
+<string lang="en"><![CDATA[Who was the wife of U.S. president Lincoln?]]></string>
+<string lang="de"><![CDATA[Wer war die Frau von US-Präsident Lincoln?]]></string>
+<string lang="es"><![CDATA[¿Quién fué la mujer del presidente americano Lincoln?]]></string>
+<string lang="it"><![CDATA[Chi era la moglie del presidente degli Stati Uniti Lincoln?]]></string>
+<string lang="fr"><![CDATA[Qui était l'épouse du président américain Lincoln?]]></string>
+<string lang="nl"><![CDATA[Wie was de vrouw van de Amerikaanse president Lincoln?]]></string>
+<keywords lang="en"><![CDATA[U.S. president, Lincoln, wife]]></keywords>
+<keywords lang="de"><![CDATA[US-Präsident, Lincoln, Frau]]></keywords>
+<keywords lang="es"><![CDATA[presidente Americano, Lincoln, mujer]]></keywords>
+<keywords lang="it"><![CDATA[presidente degli Stati Uniti, Lincoln, moglie]]></keywords>
+<keywords lang="fr"><![CDATA[épouse, président américain Lincoln]]></keywords>
+<keywords lang="nl"><![CDATA[vrouw, president van America, Lincoln]]></keywords>
+<query><![CDATA[PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+SELECT DISTINCT ?uri 
+WHERE {
+	res:Abraham_Lincoln dbo:spouse ?uri.
+}]]></query>
+<answers>
+<answer>
+<uri>http://dbpedia.org/resource/Mary_Todd_Lincoln</uri>
+</answer>
+</answers>
+<question aggregation="false" answertype="resource" id="82" onlydbo="true">
+<string lang="en"><![CDATA[In which programming language is GIMP written?]]></string>
+<string lang="de"><![CDATA[In welcher Programmiersprache wurde GIMP geschrieben?]]></string>
+<string lang="es"><![CDATA[¿En qué lenguaje de programación esta programado GIMP?]]></string>
+<string lang="it"><![CDATA[In quale linguaggio di programmazione è scritto GIMP?]]></string>
+<string lang="fr"><![CDATA[En quel langage de programmation a été écrit GIMP?]]></string>
+<string lang="nl"><![CDATA[In welke programmeertaal is GIMP geschreven?]]></string>
+<keywords lang="en"><![CDATA[GIMP, programming language]]></keywords>
+<keywords lang="de"><![CDATA[GIMP, Programmiersprache]]></keywords>
+<keywords lang="es"><![CDATA[GIMP, lenguaje de programación]]></keywords>
+<keywords lang="it"><![CDATA[GIMP, linguaggio di programmazione]]></keywords>
+<keywords lang="fr"><![CDATA[langage de programmation, GIMP]]></keywords>
+<keywords lang="nl"><![CDATA[GIMP, programmeertaal]]></keywords>
+<query><![CDATA[PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+SELECT DISTINCT ?uri 
+WHERE { 
+	res:GIMP dbo:programmingLanguage ?uri .
+}]]></query>
+<answers>
+<answer>
+<uri>http://dbpedia.org/resource/C_(programming_language)</uri>
+</answer>
+<answer>
+<uri>http://dbpedia.org/resource/GTK+</uri>
+</answer>
+</answers>
+<question aggregation="false" answertype="resource" id="22" onlydbo="true">
+<string lang="en"><![CDATA[In which country is the Limerick Lake?]]></string>
+<string lang="de"><![CDATA[In welchem Land befindet sich der Limerick Lake?]]></string>
+<string lang="es"><![CDATA[¿En qué país se encuentra el lago Limerick?]]></string>
+<string lang="it"><![CDATA[In quale stato si trova il lago Limerick?]]></string>
+<string lang="fr"><![CDATA[Dans quel pays se trouve le lac Limerick?]]></string>
+<string lang="nl"><![CDATA[In welk land ligt Limerick Lake?]]></string>
+<keywords lang="en"><![CDATA[Limerick Lake, country]]></keywords>
+<keywords lang="de"><![CDATA[Limerick Lake, Land]]></keywords>
+<keywords lang="es"><![CDATA[lago Limerick, país]]></keywords>
+<keywords lang="it"><![CDATA[lago Limerick, stato]]></keywords>
+<keywords lang="fr"><![CDATA[pays, lac Limerick]]></keywords>
+<keywords lang="nl"><![CDATA[Limerick Lake, land]]></keywords>
+<query><![CDATA[PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+SELECT DISTINCT ?uri 
+WHERE { 
+	res:Limerick_Lake dbo:country ?uri .
+}]]></query>
+<answers>
+<answer>
+<uri>http://dbpedia.org/resource/Canada</uri>
+</answer>
+</answers>
+<question aggregation="false" answertype="resource" id="31" onlydbo="true">
+<string lang="en"><![CDATA[What is the currency of the Czech Republic?]]></string>
+<string lang="de"><![CDATA[Was ist die Währung der Tschechischen Republik?]]></string>
+<string lang="es"><![CDATA[¿Cuál es la moneda de la república checa?]]></string>
+<string lang="it"><![CDATA[Qual è la valuta della Repubblica Ceca?]]></string>
+<string lang="fr"><![CDATA[Quel est la devise de la Tchéquie?]]></string>
+<string lang="nl"><![CDATA[Wat is de munteenheid van Tsjechië?]]></string>
+<keywords lang="en"><![CDATA[Czech republic, currency]]></keywords>
+<keywords lang="de"><![CDATA[Tschechischen Republik, Währung]]></keywords>
+<keywords lang="es"><![CDATA[moneda, república checa]]></keywords>
+<keywords lang="it"><![CDATA[valuta, Repubblica Ceca]]></keywords>
+<keywords lang="fr"><![CDATA[devise, Tchéquie]]></keywords>
+<keywords lang="nl"><![CDATA[Tsjechië, munteenheid]]></keywords>
+<query><![CDATA[PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+SELECT DISTINCT ?uri
+WHERE {
+	res:Czech_Republic dbo:currency ?uri .
+}]]></query>
+<answers>
+<question aggregation="false" answertype="resource" id="55" onlydbo="true">
+<string lang="en"><![CDATA[Who developed the video game World of Warcraft?]]></string>
+<string lang="de"><![CDATA[Wer hat das Videospiel World of Warcraft entwickelt?]]></string>
+<string lang="es"><![CDATA[¿Quién desarrolló el videojuego Warcraft?]]></string>
+<string lang="it"><![CDATA[Chi ha creato il videogioco World of Warcraft?]]></string>
+<string lang="fr"><![CDATA[Qui a développé World of Warcraft?]]></string>
+<string lang="nl"><![CDATA[Wie heeft het videospel World of Warcraft ontwikkeld?]]></string>
+<keywords lang="en"><![CDATA[video game, World of Warcraft, develop]]></keywords>
+<keywords lang="de"><![CDATA[Videospiel, World of Warcraft, entwickeln]]></keywords>
+<keywords lang="es"><![CDATA[videojuego, Warcraft, desarrollar]]></keywords>
+<keywords lang="it"><![CDATA[videogioco, World of Warcraft, creare]]></keywords>
+<keywords lang="fr"><![CDATA[développé, World of Warcraft]]></keywords>
+<keywords lang="nl"><![CDATA[World of Warcraft, ontwikkelaar]]></keywords>
+<query><![CDATA[PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+SELECT DISTINCT ?uri 
+WHERE {
+	res:World_of_Warcraft dbo:developer ?uri . 
+}]]></query>
+<answers>
+<answer>
+<uri>http://dbpedia.org/resource/Blizzard_Entertainment</uri>
+</answer>
+</answers>
+<question aggregation="false" answertype="resource" id="73" onlydbo="true">
+<string lang="en"><![CDATA[Who owns Aldi?]]></string>
+<string lang="de"><![CDATA[Wem gehört Aldi?]]></string>
+<string lang="es"><![CDATA[¿A quién pertenece Aldi?]]></string>
+<string lang="it"><![CDATA[Chi possiede Aldi?]]></string>
+<string lang="fr"><![CDATA[Qui possède Aldi?]]></string>
+<string lang="nl"><![CDATA[Wie is de eigenaar van Aldi?]]></string>
+<keywords lang="en"><![CDATA[own, Aldi]]></keywords>
+<keywords lang="de"><![CDATA[gehören, Aldi]]></keywords>
+<keywords lang="es"><![CDATA[pertenece, Aldi]]></keywords>
+<keywords lang="it"><![CDATA[possedere, Aldi]]></keywords>
+<keywords lang="fr"><![CDATA[possède, Aldi]]></keywords>
+<keywords lang="nl"><![CDATA[eigenaar, Aldi]]></keywords>
+<query><![CDATA[PREFIX res: <http://dbpedia.org/resource/>
+PREFIX dbo: <http://dbpedia.org/ontology/>
+SELECT DISTINCT ?uri
+WHERE {
+	res:Aldi dbo:keyPerson ?uri .
+}]]></query>
+<answers>
+<answer>
+<uri>http://dbpedia.org/resource/Karl_Albrecht</uri>
+</answer>
+<answer>
+<uri>http://dbpedia.org/resource/Theo_Albrecht</uri>
+</answer>
+</answers>
+<question aggregation="false" answertype="number" id="20" onlydbo="true">
+<string lang="en"><![CDATA[How many employees does IBM have?]]></string>
+<string lang="de"><![CDATA[Wieviele Angestellte hat IBM?]]></string>
+<string lang="es"><![CDATA[¿Cuántos empleados tiene IBM?]]></string>
+<string lang="it"><![CDATA[Quanti dipendenti ha IBM?]]></string>
+<string lang="fr"><![CDATA[Combien d'employés a IBM?]]></string>
+<string lang="nl"><![CDATA[Hoeveel medewerkers heeft IBM?]]></string>
+<keywords lang="en"><![CDATA[IBM, employees]]></keywords>
+<keywords lang="de"><![CDATA[IBM, Angestellte]]></keywords>
+<keywords lang="es"><![CDATA[IBM, empleados]]></keywords>
+<keywords lang="it"><![CDATA[IBM, dipendenti]]></keywords>
+<keywords lang="fr"><![CDATA[employés, IBM]]></keywords>
+<keywords lang="nl"><![CDATA[medewerkers, IBM]]></keywords>
+<query><![CDATA[PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+SELECT DISTINCT ?number 
+WHERE {
+	res:IBM dbo:numberOfEmployees ?number .
+}]]></query>
+<answers>
+<question aggregation="false" answertype="number" id="33" onlydbo="true">
+<string lang="en"><![CDATA[What is the area code of Berlin?]]></string>
+<string lang="de"><![CDATA[Was ist die Vorwahl von Berlin?]]></string>
+<string lang="es"><![CDATA[¿Cuál es el prefijo de Berlin?]]></string>
+<string lang="it"><![CDATA[Qual è il prefisso di Berlino?]]></string>
+<string lang="fr"><![CDATA[Quel est l'indicatif téléphonique de Berlin?]]></string>
+<string lang="nl"><![CDATA[Wat is het kengetal van Berlijn?]]></string>
+<keywords lang="en"><![CDATA[Berlin, area code]]></keywords>
+<keywords lang="de"><![CDATA[Berlin, Vorwahl]]></keywords>
+<keywords lang="es"><![CDATA[prefijo, Berlin]]></keywords>
+<keywords lang="it"><![CDATA[prefisso, Berlino]]></keywords>
+<keywords lang="fr"><![CDATA[indicatif téléphonique, Berlin]]></keywords>
+<keywords lang="nl"><![CDATA[kengetal, Berlijn]]></keywords>
+<query><![CDATA[PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+SELECT DISTINCT ?string 
+WHERE {
+	res:Berlin dbo:areaCode ?string .
+}]]></query>
+<answers>
+<answer>
+<number>030</number>
+</answer>
+</answers>
+<question aggregation="false" answertype="date" id="39" onlydbo="true">
+<string lang="en"><![CDATA[When was the Battle of Gettysburg?]]></string>
+<string lang="de"><![CDATA[Wann fand die Schlacht von Gettysburg statt?]]></string>
+<string lang="es"><![CDATA[¿Cuándo tuvo lugar la batalla de Gettysburg?]]></string>
+<string lang="it"><![CDATA[Quando ha avuto luogo la battaglia di Gettysburg?]]></string>
+<string lang="fr"><![CDATA[Quand se déroula la bataille de Gettysburg?]]></string>
+<string lang="nl"><![CDATA[Wanneer was de Slag bij Gettysburg?]]></string>
+<keywords lang="en"><![CDATA[Battle of Gettysburg]]></keywords>
+<keywords lang="de"><![CDATA[Schlacht von Gettysburg]]></keywords>
+<keywords lang="es"><![CDATA[batalla de Gettysburg]]></keywords>
+<keywords lang="it"><![CDATA[battaglia di Gettysburg]]></keywords>
+<keywords lang="fr"><![CDATA[bataille de Gettysburg, quand]]></keywords>
+<keywords lang="nl"><![CDATA[Slag bij Gettysburg]]></keywords>
+<query><![CDATA[PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+SELECT DISTINCT ?date 
+WHERE { 
+       res:Battle_of_Gettysburg dbo:date ?date .
+}]]></query>
+<answers>
+<answer>
+<date>1863-07-03</date>
+</answer>
+</answers>
+<question aggregation="false" answertype="resource" id="42" onlydbo="true">
+<string lang="en"><![CDATA[What are the official languages of the Philippines?]]></string>
+<string lang="de"><![CDATA[Was sind die Amtssprachen der Philippinen?]]></string>
+<string lang="es"><![CDATA[¿Cuáles son los idiomas oficiales de Las Philipinas?]]></string>
+<string lang="it"><![CDATA[Quali sono le lingue ufficiali delle Filippine?]]></string>
+<string lang="fr"><![CDATA[Quels sont les langues officielles des Philippines?]]></string>
+<string lang="nl"><![CDATA[Wat zijn de  officiële talen van de Filippijnen?]]></string>
+<keywords lang="en"><![CDATA[Philippines, official language]]></keywords>
+<keywords lang="de"><![CDATA[Philippinen, Amtssprache]]></keywords>
+<keywords lang="es"><![CDATA[Philipinas, idiomas oficiales]]></keywords>
+<keywords lang="it"><![CDATA[Filippine, lingua ufficiale]]></keywords>
+<keywords lang="fr"><![CDATA[langues officielles, Philippines]]></keywords>
+<keywords lang="nl"><![CDATA[officiële talen, Filippijnen]]></keywords>
+<query><![CDATA[PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+SELECT DISTINCT ?uri
+WHERE { 
+        res:Philippines dbo:officialLanguage ?uri .
+}]]></query>
+<answers>
+<answer>
+<uri>http://dbpedia.org/resource/Filipino_language</uri>
+</answer>
+</answers>
+<question aggregation="false" answertype="resource" id="87" onlydbo="true">
+<string lang="en"><![CDATA[Who wrote the book Les Piliers de la terre?]]></string>
+<string lang="de"><![CDATA[Wer schrieb das Buch Die Säulen der Erde?]]></string>
+<string lang="es"><![CDATA[¿Quen escribió el libro Los pilares de la Tierra?]]></string>
+<string lang="it"><![CDATA[Chi ha scritto il libro I pilastri della Terra?]]></string>
+<string lang="fr"><![CDATA[Qui a écrit le livre Les Piliers de la terre?]]></string>
+<string lang="nl"><![CDATA[Wie schreef het boek De Pilaren van de Aarde?]]></string>
+<keywords lang="en"><![CDATA[wrote, book, The pillars of the Earth]]></keywords>
+<keywords lang="de"><![CDATA[schreiben, Buch, Die Säulen der Erde]]></keywords>
+<keywords lang="es"><![CDATA[escritor, libro, Pilares de la Tierra]]></keywords>
+<keywords lang="it"><![CDATA[scritto, libro, I pilastri della Terra]]></keywords>
+<keywords lang="fr"><![CDATA[Les Piliers de la terre, écrivain]]></keywords>
+<keywords lang="nl"><![CDATA[auteur, De Pilaren van de Aarde]]></keywords>
+<query><![CDATA[PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+SELECT DISTINCT ?uri 
+WHERE {
+	res:The_Pillars_of_the_Earth dbo:author ?uri .
+}]]></query>
+<answers>
+<question aggregation="false" answertype="string" id="48" onlydbo="false">
+<string lang="en"><![CDATA[Give me the homepage of Forbes.]]></string>
+<string lang="de"><![CDATA[Gib mir die Homepage von Forbes.]]></string>
+<string lang="es"><![CDATA[Dame la página de web de Forbes.]]></string>
+<string lang="it"><![CDATA[Dammi il sito internet di Forbes.]]></string>
+<string lang="fr"><![CDATA[Quel est la site web de Forbes?]]></string>
+<string lang="nl"><![CDATA[Geef de homepage van Forbes.]]></string>
+<keywords lang="en"><![CDATA[Forbes, homepage]]></keywords>
+<keywords lang="de"><![CDATA[Forbes, Homepage]]></keywords>
+<keywords lang="es"><![CDATA[página de web, Forbes]]></keywords>
+<keywords lang="it"><![CDATA[sito internet, Forbes]]></keywords>
+<keywords lang="fr"><![CDATA[Forbes, site web]]></keywords>
+<keywords lang="nl"><![CDATA[homepage, Forbes]]></keywords>
+<query><![CDATA[PREFIX res: <http://dbpedia.org/resource/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+SELECT DISTINCT ?string 
+WHERE {
+	res:Forbes foaf:homepage ?string .
+}]]></query>
+<answers>
+<answer>
+<uri>http://www.forbes.com</uri>
+</answer>
+</answers>
+<question aggregation="false" answertype="resource" id="29" onlydbo="false">
+<string lang="en"><![CDATA[Which awards did WikiLeaks win?]]></string>
+<string lang="de"><![CDATA[Welche Preise hat WikiLeaks gewonnen?]]></string>
+<string lang="es"><![CDATA[¿Qué premios ha ganado WikiLeaks?]]></string>
+<string lang="it"><![CDATA[Quali premi ha vinto WikiLeaks?]]></string>
+<string lang="fr"><![CDATA[Quels prix ont été gagnés par Wikileaks?]]></string>
+<string lang="nl"><![CDATA[Welke prijzen heeft WikiLeaks gewonnen?]]></string>
+<keywords lang="en"><![CDATA[WikiLeaks, award]]></keywords>
+<keywords lang="de"><![CDATA[WikiLeaks, Preise]]></keywords>
+<keywords lang="es"><![CDATA[Wikileaks, premios]]></keywords>
+<keywords lang="it"><![CDATA[WikiLeaks, premio]]></keywords>
+<keywords lang="fr"><![CDATA[prix, WikiLeaks]]></keywords>
+<keywords lang="nl"><![CDATA[prijs, Wikileaks]]></keywords>
+<query><![CDATA[PREFIX res: <http://dbpedia.org/resource/>
+PREFIX dbp: <http://dbpedia.org/property/>
+SELECT DISTINCT ?uri
+WHERE {
+        res:WikiLeaks dbp:awards ?uri .
+}]]></query>
+<answers>
+<answer>
+<uri>http://dbpedia.org/resource/Index_on_Censorship</uri>
+</answer>
+<answer>
+<uri>http://dbpedia.org/resource/Amnesty_International_UK_Media_Awards</uri>
+</answer>
+<answer>
+<uri>http://dbpedia.org/resource/Sam_Adams_Award</uri>
+</answer>
+</answers>
+<question aggregation="false" answertype="resource" id="63" onlydbo="false">
+<string lang="en"><![CDATA[Give me all actors starring in Last Action Hero.]]></string>
+<string lang="de"><![CDATA[Gib mir alle Schauspieler, die in Last Action Hero mitgespielt haben.]]></string>
+<string lang="es"><![CDATA[Dame todos los actores que hayan actuado en Last Action Hero.]]></string>
+<string lang="it"><![CDATA[Dammi tutti gli attori che hanno recitato in Last Action Hero.]]></string>
+<string lang="fr"><![CDATA[Noem alle acteurs uit de film Last Action Hero.]]></string>
+<string lang="nl"><![CDATA[Noem alle acteurs uit de film Last Action Hero.]]></string>
+<keywords lang="en"><![CDATA[actor, starring, Last Action Hero]]></keywords>
+<keywords lang="de"><![CDATA[Schauspieler, mitspielen, Last Action Hero]]></keywords>
+<keywords lang="es"><![CDATA[actores, Last Action Hero]]></keywords>
+<keywords lang="it"><![CDATA[attori, Last Action Hero]]></keywords>
+<keywords lang="fr"><![CDATA[acteurs, Last Action Hero]]></keywords>
+<keywords lang="nl"><![CDATA[acteur, Last Action Hero]]></keywords>
+<query><![CDATA[PREFIX dbp: <http://dbpedia.org/property/>
+PREFIX res: <http://dbpedia.org/resource/>
+SELECT DISTINCT ?uri 
+WHERE {
+	res:Last_Action_Hero dbp:starring ?uri .
+}]]></query>
+<answers>
+<answer>
+<uri>http://dbpedia.org/resource/Arnold_Schwarzenegger</uri>
+</answer>
+<answer>
+<uri>http://dbpedia.org/resource/Anthony_Quinn</uri>
+</answer>
+<answer>
+<uri>http://dbpedia.org/resource/F._Murray_Abraham</uri>
+</answer>
+<answer>
+<uri>http://dbpedia.org/resource/Art_Carney</uri>
+</answer>
+<answer>
+<uri>http://dbpedia.org/resource/Austin_O'Brien</uri>
+</answer>
+<answer>
+<uri>http://dbpedia.org/resource/Tom_Noonan</uri>
+</answer>
+<answer>
+<uri>http://dbpedia.org/resource/Bridgette_Wilson</uri>
+</answer>
+<answer>
+<uri>http://dbpedia.org/resource/Charles_Dance</uri>
+</answer>
+<answer>
+<uri>http://dbpedia.org/resource/Robert_Prosky</uri>
+</answer>
+</answers>
+<question aggregation="false" answertype="resource" id="35" onlydbo="true">
+<string lang="en"><![CDATA[Who is the owner of Universal Studios?]]></string>
+<string lang="de"><![CDATA[Wem gehören die Universal Studios?]]></string>
+<string lang="es"><![CDATA[¿A quién le pertenecen los Universal Studios?]]></string>
+<string lang="it"><![CDATA[Chi è il proprietario degli Universal Studios?]]></string>
+<string lang="fr"><![CDATA[A qui appartient Universal Studios?]]></string>
+<string lang="nl"><![CDATA[Wie is de eigenaar van Universal Studios?]]></string>
+<keywords lang="en"><![CDATA[Universal Studios, owner]]></keywords>
+<keywords lang="de"><![CDATA[Universal Studios, gehören]]></keywords>
+<keywords lang="es"><![CDATA[Universal Studios, dueño]]></keywords>
+<keywords lang="it"><![CDATA[Universal Studios, proprietario]]></keywords>
+<keywords lang="fr"><![CDATA[appartient, Universal Studios]]></keywords>
+<keywords lang="nl"><![CDATA[eigenaar, Universal Studios]]></keywords>
+<query><![CDATA[PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+SELECT DISTINCT ?uri
+WHERE {
+	res:Universal_Studios dbo:owner ?uri .
+}]]></query>
+<answers>
+<answer>
+<uri>http://dbpedia.org/resource/General_Electric</uri>
+</answer>
+<answer>
+<uri>http://dbpedia.org/resource/MCA_Inc.</uri>
+</answer>
+<answer>
+<uri>http://dbpedia.org/resource/Seagram</uri>
+</answer>
+<answer>
+<uri>http://dbpedia.org/resource/Comcast</uri>
+</answer>
+<answer>
+<uri>http://dbpedia.org/resource/NBCUniversal</uri>
+</answer>
+<answer>
+<uri>http://dbpedia.org/resource/Vivendi</uri>
+</answer>
+<answer>
+<uri>http://dbpedia.org/resource/Independent_business</uri>
+</answer>
+</answers>
+<question aggregation="false" answertype="resource" id="50" onlydbo="true">
+<string lang="en"><![CDATA[What did Bruce Carver die from?]]></string>
+<string lang="de"><![CDATA[Woran ist Bruce Carver gestorben?]]></string>
+<string lang="es"><![CDATA[¿De qué murió Bruce Carver?]]></string>
+<string lang="it"><![CDATA[Di cosa è morto Bruce Carver?]]></string>
+<string lang="fr"><![CDATA[Quel est la cause de décès de Bruce Carver?]]></string>
+<string lang="nl"><![CDATA[Waaraan overleed Bruce Carver?]]></string>
+<keywords lang="en"><![CDATA[Bruce Carver, die]]></keywords>
+<keywords lang="de"><![CDATA[Bruce Carver, gestorben an]]></keywords>
+<keywords lang="es"><![CDATA[Bruce Caver, muerte]]></keywords>
+<keywords lang="it"><![CDATA[Bruce Caver, morire]]></keywords>
+<keywords lang="fr"><![CDATA[cause de décès, Bruce Carver]]></keywords>
+<keywords lang="nl"><![CDATA[Bruce Carver, gestorven aan]]></keywords>
+<query><![CDATA[PREFIX res: <http://dbpedia.org/resource/>
+PREFIX dbo: <http://dbpedia.org/ontology/>
+SELECT DISTINCT ?uri
+WHERE {
+        res:Bruce_Carver dbo:deathCause ?uri .     
+}]]></query>
+<answers>
+<answer>
+<uri>http://dbpedia.org/resource/Cancer</uri>
+</answer>
+</answers>
+
+</dataset>
