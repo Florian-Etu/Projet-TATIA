@@ -6,7 +6,7 @@ import spacy
 
 spacy.prefer_gpu()
 nlp = spacy.load("fr_core_news_sm")
-test = "Bouygues a eu une coupure de réseau à Marseille"
+entree = input()
 
 def token(sentence):
     # Tokeniser la phrase
@@ -14,4 +14,4 @@ def token(sentence):
     # Retourner le texte de chaque token
     return [X.text for X in doc]
 
-print(token(test))
+print(token(entree))
