@@ -32,6 +32,7 @@ def NER(nlp):
     #Retourne par exemple PER si l'entité est une personne
     entities = [(token.text, token.label_) for token in nlp.ents]
     print("Document:\n{}\nEntities:\n{}\n\n".format(doc, entities))
+    return entities
 
 def get_hotwords(text):
     result = []
@@ -77,3 +78,4 @@ if __name__ == '__main__':
     type_question(doc)
     type_question(nlp("Où est Emmanuel Macron ?"))
     type_question(nlp("En quelle année est né Emmanuel Macron ?"))
+    NER(nlp("pont de Brooklyn"))
