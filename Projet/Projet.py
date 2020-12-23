@@ -1,12 +1,14 @@
 # https://www.stat4decision.com/fr/traitement-langage-naturel-francais-tal-nlp/
-# Ligne de commande: "pip install spacy" + "python -m spacy download fr_core_news_lg"
+# Ligne de commande: "pip install spacy" + "python -m spacy download fr_core_news_lg" + "pip install bs4" + "pip install lxml"
 # Lancer ce programme pour vérifier la bonne installation
 
 import spacy
 import json
 import sys
 import requests
+from urllib.request import urlopen
 from spacy.matcher import Matcher
+from bs4 import BeautifulSoup
 from collections import Counter
 from string import punctuation
 
@@ -51,7 +53,7 @@ def reponse(question):
     #ANALYSE DU TYPE DE LA QUESTION (via expression régèlière en s'aidant de l'analyse NER):
     #https://spacy.io/usage/rule-based-matching
     matcher = Matcher(nlp.vocab)
-    pattern = [{"LOWER": "qui"},{"POS": "AUX"}, {"ENT_TYPE": "PER", "OP": "+"}] #QUI + AUXILIAIRE + UN NOM DE PERSONNE (éventuellement prénom + nom de famille) = ON RECHERCHE UNE PERSONNE
+    pattern = [{"LOWER": "qui"},{"POS": "AUX"}, {"ENT_TYPE": "PER"}] #QUI + AUXILIAIRE + UN NOM DE PERSONNE (éventuellement prénom + nom de famille) = ON RECHERCHE UNE PERSONNE
     matcher.add("person", None, pattern)
 
     pattern = [{"LOWER": "où"}]
@@ -66,13 +68,13 @@ def reponse(question):
     #Traitement selon type de la question
     for match_id, start, end in matches:
         string_id = nlp.vocab.strings[match_id]  # Get string representation
-        span = question[start:end]  # The matched span
-
+        
+        #span = question[start:end]  # The matched span
         #print(match_id, string_id, start, end, span.text)
 
         #On cherche des informations sur une personne
         if(string_id=="person"):
-            return get_abstract([(ent.text, ent.label_) for ent in question.ents][0][0]) #On execute la fonction pour faire une requete sur le nom de la personne sur laquelle on veut des informations
+            return lookup_service([(ent.text, ent.label_) for ent in question.ents][0][0], string_id) #On execute la fonction pour faire une requete sur le nom de la personne sur laquelle on veut des informations
 
 def query(q, epr, f='application/json'):
     try:
@@ -82,6 +84,14 @@ def query(q, epr, f='application/json'):
     except Exception as e:
         print(e, file=sys.stdout)
         raise
+
+#La fonction suivante utilise le service lookup pour rechercher à quel label correspont le mot clé entré (par exemple le mot clé "Macron" renverra "Emmanuel Macron")
+def lookup_service(requete, type):
+    print(requete)
+    xml_content = urlopen("https://lookup.dbpedia.org/api/search/KeywordSearch?QueryClass=" + type + "&QueryString="+requete.replace(" ","%20")).read()  
+    soup = BeautifulSoup(xml_content, "xml")    
+    return get_abstract(soup.Label.string)    
+
 
 def get_abstract(requete):
 
@@ -125,7 +135,7 @@ if __name__ == '__main__':
     entree = nlp("Qui est Nicolas Sarkozy ?")
     print(reponse(entree))
 
-    entree = nlp("Qui est Zinedine Zidane ?")
+    entree = nlp("Qui est Zinedine ?")
     print(reponse(entree))
 
 
