@@ -90,9 +90,9 @@ def reponse(question):
             return get_abstract(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="PER"][0][0], string_id)) #On execute la fonction pour faire une requete sur le nom de la personne sur laquelle on veut des informations
 
         elif(string_id=="mayor"):
-            mayor = requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], "city"), "leaderName", "populatedPlace")
+            mayor = requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], "Settlement"), "leaderName", "populatedPlace")
             if(mayor == "Aucun résultat correspondant à votre recherche.\n" ):
-                return requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], "city"), string_id, "populatedPlace")
+                return requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], "Settlement"), string_id, "populatedPlace")
             return mayor
         
         elif(string_id=="Leader_pays"):
@@ -183,6 +183,9 @@ if __name__ == '__main__':
     print(reponse(entree))
 
     entree = nlp("Qui est le maire de New York ?")
+    print(reponse(entree))
+
+    entree = nlp("Qui est le maire de Marseille ?")
     print(reponse(entree))
 
     entree = nlp("Qui est le président des USA ?")
