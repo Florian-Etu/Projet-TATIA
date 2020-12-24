@@ -50,18 +50,31 @@ def get_hotwords(text):
     return result
 
 def reponse(question):
+    print(question)
     #ANALYSE DU TYPE DE LA QUESTION (via expression régèlière en s'aidant de l'analyse NER):
     #https://spacy.io/usage/rule-based-matching
     matcher = Matcher(nlp.vocab)
+
+    #Recherche d'une personne
     pattern = [{"LOWER": "qui"},{"POS": "AUX"}, {"ENT_TYPE": "PER"}] #QUI + AUXILIAIRE + UN NOM DE PERSONNE (éventuellement prénom + nom de famille) = ON RECHERCHE UNE PERSONNE
     matcher.add("person", None, pattern)
-
+    
+    #Recherche d'un lieu
     pattern = [{"LOWER": "où"}]
     matcher.add("Lieu", None, pattern)
 
+    #Recherche d'une date
     pattern = [{"LOWER":{"REGEX": "année|mois|jour|date"}}] #Si la question contient année ou mois ou jour ou date = date
     pattern2 = [{"LOWER":"quand"}, {"POS": "AUX", "OP": "*"}] #Quand + auxiliaire optionnel = date
     matcher.add("Date", None, pattern, pattern2) 
+
+    #Recherche leader d'une ville
+    pattern = [{"LOWER":{"REGEX": "maire"}}, {"POS": "ADP", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"ENT_TYPE": "LOC"}]
+    matcher.add("mayor", None, pattern)
+
+    #Recherche leader d'un pays
+    pattern = [{"LOWER":{"REGEX": "président|president|maire|chef|dirigeant|roi|renne|chancelier|chanceliere|ministre"}}, {"POS": "ADP", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"ENT_TYPE": "LOC"}] #"maire de...", "président de la..."
+    matcher.add("Leader_pays", None, pattern)
     
     matches = matcher(question)
 
@@ -74,7 +87,16 @@ def reponse(question):
 
         #On cherche des informations sur une personne
         if(string_id=="person"):
-            return lookup_service([(ent.text, ent.label_) for ent in question.ents][0][0], string_id) #On execute la fonction pour faire une requete sur le nom de la personne sur laquelle on veut des informations
+            return get_abstract(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="PER"][0][0], string_id)) #On execute la fonction pour faire une requete sur le nom de la personne sur laquelle on veut des informations
+
+        elif(string_id=="mayor"):
+            mayor = requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], "city"), "leaderName", "populatedPlace")
+            if(mayor == "Aucun résultat correspondant à votre recherche.\n" ):
+                return requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], "city"), string_id, "populatedPlace")
+            return mayor
+        
+        elif(string_id=="Leader_pays"):
+            return requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], "country"), "leader", "populatedPlace")
 
 def query(q, epr, f='application/json'):
     try:
@@ -86,11 +108,10 @@ def query(q, epr, f='application/json'):
         raise
 
 #La fonction suivante utilise le service lookup pour rechercher à quel label correspont le mot clé entré (par exemple le mot clé "Macron" renverra "Emmanuel Macron")
-def lookup_service(requete, type):
-    print(requete)
+def lookup_keyword(requete, type):
     xml_content = urlopen("https://lookup.dbpedia.org/api/search/KeywordSearch?QueryClass=" + type + "&QueryString="+requete.replace(" ","%20")).read()  
-    soup = BeautifulSoup(xml_content, "xml")    
-    return get_abstract(soup.Label.string)    
+    soup = BeautifulSoup(xml_content, "xml")
+    return soup.Label.string 
 
 
 def get_abstract(requete):
@@ -124,6 +145,26 @@ def get_abstract(requete):
     
     return json_query["results"]["bindings"][0]["abstract"]["value"]+'\n'
 
+def requete_dbpedia(requete, type, objet):
+    json_query = json.loads(query("""
+    prefix dbpedia: <http://dbpedia.org/resource/>
+    prefix dbpedia-owl: <http://dbpedia.org/ontology/>
+    SELECT DISTINCT ?""" +type + """ WHERE { 
+    [ rdfs:label ?"""+ objet + """
+    ; dbpedia-owl:"""+type+ '?' + type+"""] .
+    VALUES ?"""+objet+ '{'+ '"' + requete +'"' + """@en }
+    }
+    LIMIT 10""","http://dbpedia.org/sparql"))
+
+    if(not json_query["results"]["bindings"]):
+        return "Aucun résultat correspondant à votre recherche.\n"
+
+    json_result=json.loads(query("""SELECT ?label WHERE {<"""+ json_query["results"]["bindings"][0][type]["value"] +"""> rdfs:label ?label. FILTER langMatches(lang(?label),"en")}""", "http://dbpedia.org/sparql"))
+    return json_result["results"]["bindings"][0]["label"]["value"]+'\n'
+    
+
+    
+
 
 
 
@@ -137,7 +178,18 @@ if __name__ == '__main__':
 
     entree = nlp("Qui est Zinedine ?")
     print(reponse(entree))
+    
+    entree = nlp("Qui est le maire de Paris ?")
+    print(reponse(entree))
 
+    entree = nlp("Qui est le maire de New York ?")
+    print(reponse(entree))
+
+    entree = nlp("Qui est le président des USA ?")
+    print(reponse(entree))
+
+    entree = nlp("Qui est le président de la France ?")
+    print(reponse(entree))
 
     """doc = nlp(entree)
     #print(entree)
