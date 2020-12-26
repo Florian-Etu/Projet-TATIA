@@ -1,5 +1,5 @@
 # https://www.stat4decision.com/fr/traitement-langage-naturel-francais-tal-nlp/
-# Ligne de commande: "pip install spacy" + "python -m spacy download fr_core_news_lg" + "pip install bs4" + "pip install lxml"
+# Ligne de commande: "pip install spacy" + "python -m spacy download fr_core_news_lg" + "pip install bs4" + "pip install lxml" + "pip install deep-translator
 # Lancer ce programme pour vérifier la bonne installation
 
 import spacy
@@ -11,6 +11,7 @@ from spacy.matcher import Matcher
 from bs4 import BeautifulSoup
 from collections import Counter
 from string import punctuation
+from deep_translator import GoogleTranslator
 
 spacy.prefer_gpu()
 nlp = spacy.load("fr_core_news_lg")
@@ -109,7 +110,9 @@ def query(q, epr, f='application/json'):
 
 #La fonction suivante utilise le service lookup pour rechercher à quel label correspont le mot clé entré (par exemple le mot clé "Macron" renverra "Emmanuel Macron")
 def lookup_keyword(requete, type):
-    xml_content = urlopen("https://lookup.dbpedia.org/api/search/KeywordSearch?QueryClass=" + type + "&QueryString="+requete.replace(" ","%20")).read()  
+    #On traduit la requete pour la recherche avec le service lookup (qui ne prend en charge que l'anglais)
+    requete_translated = GoogleTranslator(source='fr', target='en').translate(requete) 
+    xml_content = urlopen("https://lookup.dbpedia.org/api/search/KeywordSearch?QueryClass=" + type + "&QueryString="+requete_translated.replace(" ","%20")).read()  
     soup = BeautifulSoup(xml_content, "xml")
     return soup.Label.string 
 
@@ -192,6 +195,9 @@ if __name__ == '__main__':
     print(reponse(entree))
 
     entree = nlp("Qui est le président de la France ?")
+    print(reponse(entree))
+
+    entree = nlp("Qui est la chanceliere de l'Allemagne ?")
     print(reponse(entree))
 
     """doc = nlp(entree)
