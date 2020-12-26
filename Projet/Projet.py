@@ -36,7 +36,7 @@ def PoSTagger(doc):
 def NER(nlp):
     #Retourne par exemple PER si l'entité est une personne
     entities = [(token.text, token.label_) for token in nlp.ents]
-    print("Document:\n{}\nEntities:\n{}\n\n".format(doc, entities))
+    print("Document:\n{}\nEntities:\n{}\n\n".format(nlp, entities))
     return entities
 
 def get_hotwords(text):
@@ -80,6 +80,11 @@ def exp_reg(question):
     pattern2 = [{"LOWER":"quand"}, {"POS": "AUX", "OP": "*"}] #Quand + auxiliaire optionnel = date
     matcher.add("Date", None, pattern, pattern2) 
 
+    #Recherche d'un site web
+    pattern = [{"LOWER":{"REGEX": "web|adresse|site|accueil|page"}}, {"POS": "ADP", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"ENT_TYPE": "ORG"}]
+    matcher.add("website", None, pattern) 
+
+
     #Recherche leader d'une ville
     pattern = [{"LOWER":{"REGEX": "maire"}}, {"POS": "ADP", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"ENT_TYPE": "LOC"}]
     matcher.add("mayor", None, pattern)
@@ -109,6 +114,9 @@ def exp_reg(question):
         
         elif(string_id=="Leader_pays"):
             return requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], "country"), "leader", "populatedPlace")
+
+        elif(string_id=="website"):
+            return requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="ORG"][0][0], None), "wikiPageExternalLink", string_id)
 
 def query(q, epr, f='application/json'):
     try:
@@ -175,6 +183,9 @@ def requete_dbpedia(requete, type, objet):
     if(not json_query["results"]["bindings"]):
         return "Aucun résultat correspondant à votre recherche.\n"
 
+    if(objet=="website"):
+        return json_query["results"]["bindings"][0][type]["value"]+'\n'
+
     json_result=json.loads(query("""SELECT ?label WHERE {<"""+ json_query["results"]["bindings"][0][type]["value"] +"""> rdfs:label ?label. FILTER langMatches(lang(?label),"en")}""", "http://dbpedia.org/sparql"))
     if(json_result["results"]["bindings"]):
         return json_result["results"]["bindings"][0]["label"]["value"]+'\n'
@@ -210,6 +221,9 @@ def requete_dbpedia_multiple(requete, type, objet):
 
 if __name__ == '__main__':
     #entree = input()
+    entree = "Quel est le site web de Forbes ?"
+    print(reponse(entree))
+    
     entree = "Qui est le créateur de Wikipedia ?"
     print(reponse(entree))
 
@@ -245,6 +259,7 @@ if __name__ == '__main__':
 
     entree = "Qui est le créateur de Goofy ?"
     print(reponse(entree))
+
 
     """doc = nlp(entree)
     #print(entree)
