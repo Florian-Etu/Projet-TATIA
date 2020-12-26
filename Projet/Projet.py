@@ -1,5 +1,5 @@
 # https://www.stat4decision.com/fr/traitement-langage-naturel-francais-tal-nlp/
-# Ligne de commande: "pip install spacy" + "python -m spacy download fr_core_news_lg" + "pip install bs4" + "pip install lxml" + "pip install deep-translator
+# Ligne de commande: "pip install spacy" + "python -m spacy download fr_core_news_lg" + "pip install bs4" + "pip install lxml" + "pip install deep-translator"
 # Lancer ce programme pour vérifier la bonne installation
 
 import spacy
@@ -52,6 +52,14 @@ def get_hotwords(text):
 
 def reponse(question):
     print(question)
+    hotwords = get_hotwords(question)
+    createur = ["createur", "créateur", "créateure", "createure", "créatrice", "creatrice", "auteur", "auteure", "autrice"]
+    if(len(hotwords)>=2):
+        if(hotwords[0] in createur):
+            return requete_dbpedia_multiple(lookup_keyword(get_hotwords(question)[1], None), "author", "name")
+    return exp_reg(nlp(question))
+
+def exp_reg(question):
     #ANALYSE DU TYPE DE LA QUESTION (via expression régèlière en s'aidant de l'analyse NER):
     #https://spacy.io/usage/rule-based-matching
     matcher = Matcher(nlp.vocab)
@@ -112,13 +120,15 @@ def query(q, epr, f='application/json'):
 def lookup_keyword(requete, type):
     #On traduit la requete pour la recherche avec le service lookup (qui ne prend en charge que l'anglais)
     requete_translated = GoogleTranslator(source='fr', target='en').translate(requete) 
-    xml_content = urlopen("https://lookup.dbpedia.org/api/search/KeywordSearch?QueryClass=" + type + "&QueryString="+requete_translated.replace(" ","%20")).read()  
+    if(type):
+        xml_content = urlopen("https://lookup.dbpedia.org/api/search/KeywordSearch?QueryClass=" + type + "&QueryString="+requete_translated.replace(" ","%20")).read()
+    else:
+        xml_content = urlopen("https://lookup.dbpedia.org/api/search/KeywordSearch?QueryString="+requete_translated.replace(" ","%20")).read()
     soup = BeautifulSoup(xml_content, "xml")
     return soup.Label.string 
 
 
 def get_abstract(requete):
-
     json_query = json.loads(query("""prefix dbpedia: <http://dbpedia.org/resource/>
     prefix dbpedia-owl: <http://dbpedia.org/ontology/>
     SELECT DISTINCT ?abstract WHERE { 
@@ -164,6 +174,25 @@ def requete_dbpedia(requete, type, objet):
 
     json_result=json.loads(query("""SELECT ?label WHERE {<"""+ json_query["results"]["bindings"][0][type]["value"] +"""> rdfs:label ?label. FILTER langMatches(lang(?label),"en")}""", "http://dbpedia.org/sparql"))
     return json_result["results"]["bindings"][0]["label"]["value"]+'\n'
+
+def requete_dbpedia_multiple(requete, type, objet):
+    result=""
+    json_query = json.loads(query("""
+    prefix dbpedia: <http://dbpedia.org/resource/>
+    prefix dbpedia-owl: <http://dbpedia.org/ontology/>
+    SELECT DISTINCT ?""" +type + """ WHERE { 
+    [ rdfs:label ?"""+ objet + """
+    ; dbpedia-owl:"""+type+ '?' + type+"""] .
+    VALUES ?"""+objet+ '{'+ '"' + requete +'"' + """@en }
+    }
+    LIMIT 10""","http://dbpedia.org/sparql"))
+
+    if(not json_query["results"]["bindings"]):
+        return "Aucun résultat correspondant à votre recherche.\n"
+    for resultats_requete in json_query["results"]["bindings"]:
+        json_result=json.loads(query("""SELECT ?label WHERE {<"""+ resultats_requete[type]["value"] +"""> rdfs:label ?label. FILTER langMatches(lang(?label),"en")}""", "http://dbpedia.org/sparql"))
+        result+=json_result["results"]["bindings"][0]["label"]["value"]+ " et "
+    return result[:-3]+'\n'
     
 
     
@@ -173,31 +202,34 @@ def requete_dbpedia(requete, type, objet):
 
 if __name__ == '__main__':
     #entree = input()
-    entree = nlp("Qui est Emmanuel Macron ?")
+    entree = "Qui est le créateur de Wikipedia ?"
     print(reponse(entree))
 
-    entree = nlp("Qui est Nicolas Sarkozy ?")
+    entree = "Qui est Emmanuel Macron ?"
     print(reponse(entree))
 
-    entree = nlp("Qui est Zinedine ?")
+    entree = "Qui est Nicolas Sarkozy ?"
+    print(reponse(entree))
+
+    entree = "Qui est Zinedine ?"
     print(reponse(entree))
     
-    entree = nlp("Qui est le maire de Paris ?")
+    entree = "Qui est le maire de Paris ?"
     print(reponse(entree))
 
-    entree = nlp("Qui est le maire de New York ?")
+    entree = "Qui est le maire de New York ?"
     print(reponse(entree))
 
-    entree = nlp("Qui est le maire de Marseille ?")
+    entree = "Qui est le maire de Marseille ?"
     print(reponse(entree))
 
-    entree = nlp("Qui est le président des USA ?")
+    entree = "Qui est le président des USA ?"
     print(reponse(entree))
 
-    entree = nlp("Qui est le président de la France ?")
+    entree = "Qui est le président de la France ?"
     print(reponse(entree))
 
-    entree = nlp("Qui est la chanceliere de l'Allemagne ?")
+    entree = "Qui est la chanceliere de l'Allemagne ?"
     print(reponse(entree))
 
     """doc = nlp(entree)
