@@ -53,10 +53,13 @@ def get_hotwords(text):
 def reponse(question):
     print(question)
     hotwords = get_hotwords(question)
-    createur = ["createur", "créateur", "créateure", "createure", "créatrice", "creatrice", "auteur", "auteure", "autrice"]
+    createur = ["createur", "créateur", "créateure", "createure", "créatrice", "creatrice", "auteur", "auteure", "autrice", "écrit", "inventé", "inventeur", "inventeuse", "inventeure", "livre", "film"]
     if(len(hotwords)>=2):
         if(hotwords[0] in createur):
-            return requete_dbpedia_multiple(lookup_keyword(get_hotwords(question)[1], None), "author", "name")
+            createur = requete_dbpedia_multiple(lookup_keyword(get_hotwords(question)[1], None), "author", "name")
+            if(createur == "Aucun résultat correspondant à votre recherche.\n" ):
+                return requete_dbpedia_multiple(lookup_keyword(get_hotwords(question)[1], None), "creator", "name")
+            return createur
     return exp_reg(nlp(question))
 
 def exp_reg(question):
@@ -173,7 +176,10 @@ def requete_dbpedia(requete, type, objet):
         return "Aucun résultat correspondant à votre recherche.\n"
 
     json_result=json.loads(query("""SELECT ?label WHERE {<"""+ json_query["results"]["bindings"][0][type]["value"] +"""> rdfs:label ?label. FILTER langMatches(lang(?label),"en")}""", "http://dbpedia.org/sparql"))
-    return json_result["results"]["bindings"][0]["label"]["value"]+'\n'
+    if(json_result["results"]["bindings"]):
+        return json_result["results"]["bindings"][0]["label"]["value"]+'\n'
+    else:
+        return "Aucun résultat correspondant à votre recherche.\n"
 
 def requete_dbpedia_multiple(requete, type, objet):
     result=""
@@ -189,9 +195,11 @@ def requete_dbpedia_multiple(requete, type, objet):
 
     if(not json_query["results"]["bindings"]):
         return "Aucun résultat correspondant à votre recherche.\n"
+
     for resultats_requete in json_query["results"]["bindings"]:
         json_result=json.loads(query("""SELECT ?label WHERE {<"""+ resultats_requete[type]["value"] +"""> rdfs:label ?label. FILTER langMatches(lang(?label),"en")}""", "http://dbpedia.org/sparql"))
-        result+=json_result["results"]["bindings"][0]["label"]["value"]+ " et "
+        if(json_result["results"]["bindings"]):
+            result+=json_result["results"]["bindings"][0]["label"]["value"]+ " et "
     return result[:-3]+'\n'
     
 
@@ -230,6 +238,12 @@ if __name__ == '__main__':
     print(reponse(entree))
 
     entree = "Qui est la chanceliere de l'Allemagne ?"
+    print(reponse(entree))
+
+    entree = "Qui a écrit le livre Frankenstein ?"
+    print(reponse(entree))
+
+    entree = "Qui est le créateur de Goofy ?"
     print(reponse(entree))
 
     """doc = nlp(entree)
