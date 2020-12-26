@@ -113,7 +113,11 @@ def exp_reg(question):
         elif(string_id=="mayor"):
             mayor = requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], "city"), "leaderName", "populatedPlace")
             if(mayor == "Aucun résultat correspondant à votre recherche.\n" ):
-                return requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], "city"), string_id, "populatedPlace")
+                mayor =  requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], "city"), string_id, "populatedPlace")
+                if(mayor == "Aucun résultat correspondant à votre recherche.\n"):
+                    mayor =  requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], "settlement"), string_id, "populatedPlace")
+                    if(mayor == "Aucun résultat correspondant à votre recherche.\n"):
+                        return requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], "settlement", False), string_id, "populatedPlace")                            
             return mayor
         
         elif(string_id=="Leader_pays"):
@@ -135,9 +139,11 @@ def query(q, epr, f='application/json'):
 
 # La fonction suivante utilise le service lookup pour rechercher à quel label correspont le mot clé entré (par
 # exemple le mot clé "Macron" renverra "Emmanuel Macron")
-def lookup_keyword(requete, type):
+def lookup_keyword(requete, type, translate=True):
     #On traduit la requete pour la recherche avec le service lookup (qui ne prend en charge que l'anglais)
-    requete_translated = GoogleTranslator(source='fr', target='en').translate(requete) 
+    requete_translated = requete
+    if(translate):
+        requete_translated = GoogleTranslator(source='fr', target='en').translate(requete) 
     if(type):
         #xml_content = urlopen("https://lookup.dbpedia.org/api/search/KeywordSearch?QueryClass=" + type + "&QueryString="+requete_translated.replace(" ","%20")).read()
         xml_content = urlopen("http://akswnc7.informatik.uni-leipzig.de/lookup/api/search?label=" + requete_translated.replace(" ","%20") + "&typeName="+type).read()
@@ -246,6 +252,12 @@ if __name__ == '__main__':
     print(reponse(entree))
 
     entree = "Qui est le maire de Budapest ?"
+    print(reponse(entree))
+
+    entree = "Qui est le maire de Lyon ?"
+    print(reponse(entree))
+
+    entree = "Qui est le maire de Marseille ?"
     print(reponse(entree))
 
     entree = "Qui est le président des USA ?"
