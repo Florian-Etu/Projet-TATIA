@@ -16,10 +16,12 @@ from deep_translator import GoogleTranslator
 spacy.prefer_gpu()
 nlp = spacy.load("fr_core_news_lg")
 
+
 def token(doc):
     # Tokeniser la phrase
     # Retourner le texte de chaque token
     return [X.text for X in doc]
+
 
 def PoSTagger(doc):
     print("Pos tagger : ") #PoS tagger
@@ -39,7 +41,8 @@ def NER(nlp):
     print("Document:\n{}\nEntities:\n{}\n\n".format(nlp, entities))
     return entities
 
-def get_hotwords(text):
+
+def get_hot_words(text):
     result = []
     pos_tag = ['PROPN', 'ADJ', 'NOUN'] 
     doc = nlp(text.lower()) 
@@ -50,17 +53,19 @@ def get_hotwords(text):
             result.append(token.text)
     return result
 
+
 def reponse(question):
     print(question)
-    hotwords = get_hotwords(question)
+    hotwords = get_hot_words(question)
     createur = ["createur", "créateur", "créateure", "createure", "créatrice", "creatrice", "auteur", "auteure", "autrice", "écrit", "inventé", "inventeur", "inventeuse", "inventeure", "livre", "film"]
     if(len(hotwords)>=2):
         if(hotwords[0] in createur):
-            createur = requete_dbpedia_multiple(lookup_keyword(get_hotwords(question)[1], None), "author", "name")
+            createur = requete_dbpedia_multiple(lookup_keyword(get_hot_words(question)[1], None), "author", "name")
             if(createur == "Aucun résultat correspondant à votre recherche.\n" ):
-                return requete_dbpedia_multiple(lookup_keyword(get_hotwords(question)[1], None), "creator", "name")
+                return requete_dbpedia_multiple(lookup_keyword(get_hot_words(question)[1], None), "creator", "name")
             return createur
     return exp_reg(nlp(question))
+
 
 def exp_reg(question):
     #ANALYSE DU TYPE DE LA QUESTION (via expression régèlière en s'aidant de l'analyse NER):
@@ -75,34 +80,33 @@ def exp_reg(question):
     pattern = [{"LOWER": "où"}]
     matcher.add("Lieu", None, pattern)
 
-    #Recherche d'une date
+    # Recherche d'une date
     pattern = [{"LOWER":{"REGEX": "année|mois|jour|date"}}] #Si la question contient année ou mois ou jour ou date = date
     pattern2 = [{"LOWER":"quand"}, {"POS": "AUX", "OP": "*"}] #Quand + auxiliaire optionnel = date
     matcher.add("Date", None, pattern, pattern2) 
 
-    #Recherche d'un site web
+    # Recherche d'un site web
     pattern = [{"LOWER":{"REGEX": "web|adresse|site|accueil|page"}}, {"POS": "ADP", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"ENT_TYPE": "ORG"}]
     matcher.add("website", None, pattern) 
 
-
-    #Recherche leader d'une ville
+    # Recherche leader d'une ville
     pattern = [{"LOWER":{"REGEX": "maire"}}, {"POS": "ADP", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"ENT_TYPE": "LOC"}]
     matcher.add("mayor", None, pattern)
 
-    #Recherche leader d'un pays
+    # Recherche leader d'un pays
     pattern = [{"LOWER":{"REGEX": "président|president|maire|chef|dirigeant|roi|renne|chancelier|chanceliere|ministre"}}, {"POS": "ADP", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"ENT_TYPE": "LOC"}] #"maire de...", "président de la..."
     matcher.add("Leader_pays", None, pattern)
     
     matches = matcher(question)
 
-    #Traitement selon type de la question
+    # Traitement selon type de la question
     for match_id, start, end in matches:
         string_id = nlp.vocab.strings[match_id]  # Get string representation
         
-        #span = question[start:end]  # The matched span
-        #print(match_id, string_id, start, end, span.text)
+        # span = question[start:end]  # The matched span
+        # print(match_id, string_id, start, end, span.text)
 
-        #On cherche des informations sur une personne
+        # On cherche des informations sur une personne
         if(string_id=="person"):
             return get_abstract(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="PER"][0][0], string_id)) #On execute la fonction pour faire une requete sur le nom de la personne sur laquelle on veut des informations
 
@@ -118,6 +122,7 @@ def exp_reg(question):
         elif(string_id=="website"):
             return requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="ORG"][0][0], None), "wikiPageExternalLink", string_id)
 
+
 def query(q, epr, f='application/json'):
     try:
         params = {'query': q}
@@ -127,7 +132,9 @@ def query(q, epr, f='application/json'):
         print(e, file=sys.stdout)
         raise
 
-#La fonction suivante utilise le service lookup pour rechercher à quel label correspont le mot clé entré (par exemple le mot clé "Macron" renverra "Emmanuel Macron")
+
+# La fonction suivante utilise le service lookup pour rechercher à quel label correspont le mot clé entré (par
+# exemple le mot clé "Macron" renverra "Emmanuel Macron")
 def lookup_keyword(requete, type):
     #On traduit la requete pour la recherche avec le service lookup (qui ne prend en charge que l'anglais)
     requete_translated = GoogleTranslator(source='fr', target='en').translate(requete) 
@@ -171,55 +178,49 @@ def get_abstract(requete):
     
     return json_query["results"]["bindings"][0]["abstract"]["value"]+'\n'
 
-def requete_dbpedia(requete, type, objet):
+
+def json_load(requete, predicate, objet):
     json_query = json.loads(query("""
-    prefix dbpedia: <http://dbpedia.org/resource/>
-    prefix dbpedia-owl: <http://dbpedia.org/ontology/>
-    SELECT DISTINCT ?""" +type + """ WHERE { 
-    [ rdfs:label ?"""+ objet + """
-    ; dbpedia-owl:"""+type+ '?' + type+"""] .
-    VALUES ?"""+objet+ '{'+ '"' + requete +'"' + """@en }
-    }
-    LIMIT 10""","http://dbpedia.org/sparql"))
+        prefix dbpedia: <http://dbpedia.org/resource/>
+        prefix dbpedia-owl: <http://dbpedia.org/ontology/>
+        SELECT DISTINCT ?""" + predicate + """ WHERE { 
+        [ rdfs:label ?""" + objet + """
+        ; dbpedia-owl:""" + predicate + '?' + predicate + """] .
+        VALUES ?""" + objet + '{' + '"' + requete + '"' + """@en }
+        }
+        LIMIT 10""", "http://dbpedia.org/sparql"))
+    return json_query
+
+
+def requete_dbpedia(requete, predicate, objet):
+    json_query = json_load(requete, predicate, objet)
 
     if(not json_query["results"]["bindings"]):
         return "Aucun résultat correspondant à votre recherche.\n"
 
     if(objet=="website"):
-        return json_query["results"]["bindings"][0][type]["value"]+'\n'
+        return json_query["results"]["bindings"][0][predicate]["value"] + '\n'
 
-    json_result=json.loads(query("""SELECT ?label WHERE {<"""+ json_query["results"]["bindings"][0][type]["value"] +"""> rdfs:label ?label. FILTER langMatches(lang(?label),"en")}""", "http://dbpedia.org/sparql"))
+    json_result=json.loads(query("""SELECT ?label WHERE {<""" + json_query["results"]["bindings"][0][predicate]["value"] + """> rdfs:label ?label. FILTER langMatches(lang(?label),"en")}""", "http://dbpedia.org/sparql"))
     if(json_result["results"]["bindings"]):
         return json_result["results"]["bindings"][0]["label"]["value"]+'\n'
     else:
         return "Aucun résultat correspondant à votre recherche.\n"
 
-def requete_dbpedia_multiple(requete, type, objet):
+
+def requete_dbpedia_multiple(requete, predicate, objet):
     result=""
-    json_query = json.loads(query("""
-    prefix dbpedia: <http://dbpedia.org/resource/>
-    prefix dbpedia-owl: <http://dbpedia.org/ontology/>
-    SELECT DISTINCT ?""" +type + """ WHERE { 
-    [ rdfs:label ?"""+ objet + """
-    ; dbpedia-owl:"""+type+ '?' + type+"""] .
-    VALUES ?"""+objet+ '{'+ '"' + requete +'"' + """@en }
-    }
-    LIMIT 10""","http://dbpedia.org/sparql"))
+    json_query = json_load(requete, predicate, objet)
 
     if(not json_query["results"]["bindings"]):
         return "Aucun résultat correspondant à votre recherche.\n"
 
     for resultats_requete in json_query["results"]["bindings"]:
-        json_result=json.loads(query("""SELECT ?label WHERE {<"""+ resultats_requete[type]["value"] +"""> rdfs:label ?label. FILTER langMatches(lang(?label),"en")}""", "http://dbpedia.org/sparql"))
+        json_result=json.loads(query("""SELECT ?label WHERE {<""" + resultats_requete[predicate]["value"] + """> rdfs:label ?label. FILTER langMatches(lang(?label),"en")}""", "http://dbpedia.org/sparql"))
         if(json_result["results"]["bindings"]):
             result+=json_result["results"]["bindings"][0]["label"]["value"]+ " et "
     return result[:-3]+'\n'
     
-
-    
-
-
-
 
 if __name__ == '__main__':
     #entree = input()
@@ -267,7 +268,7 @@ if __name__ == '__main__':
     #print(entree)
     PoSTagger(doc)
     print(token(doc))
-    sortie = get_hotwords(entree)
+    sortie = get_hot_words(entree)
     print(sortie)
     NER(doc)
     print(type_question(doc))
