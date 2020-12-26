@@ -107,9 +107,9 @@ def exp_reg(question):
             return get_abstract(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="PER"][0][0], string_id)) #On execute la fonction pour faire une requete sur le nom de la personne sur laquelle on veut des informations
 
         elif(string_id=="mayor"):
-            mayor = requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], "Settlement"), "leaderName", "populatedPlace")
+            mayor = requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], "city"), "leaderName", "populatedPlace")
             if(mayor == "Aucun résultat correspondant à votre recherche.\n" ):
-                return requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], "Settlement"), string_id, "populatedPlace")
+                return requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], "city"), string_id, "populatedPlace")
             return mayor
         
         elif(string_id=="Leader_pays"):
@@ -132,9 +132,11 @@ def lookup_keyword(requete, type):
     #On traduit la requete pour la recherche avec le service lookup (qui ne prend en charge que l'anglais)
     requete_translated = GoogleTranslator(source='fr', target='en').translate(requete) 
     if(type):
-        xml_content = urlopen("https://lookup.dbpedia.org/api/search/KeywordSearch?QueryClass=" + type + "&QueryString="+requete_translated.replace(" ","%20")).read()
+        #xml_content = urlopen("https://lookup.dbpedia.org/api/search/KeywordSearch?QueryClass=" + type + "&QueryString="+requete_translated.replace(" ","%20")).read()
+        xml_content = urlopen("http://akswnc7.informatik.uni-leipzig.de/lookup/api/search?label=" + requete_translated.replace(" ","%20") + "&typeName="+type).read()
     else:
-        xml_content = urlopen("https://lookup.dbpedia.org/api/search/KeywordSearch?QueryString="+requete_translated.replace(" ","%20")).read()
+        #xml_content = urlopen("https://lookup.dbpedia.org/api/search/KeywordSearch?QueryString="+requete_translated.replace(" ","%20")).read()
+        xml_content = urlopen("http://akswnc7.informatik.uni-leipzig.de/lookup/api/search?label="+requete_translated.replace(" ","%20")).read()
     soup = BeautifulSoup(xml_content, "xml")
     return soup.Label.string 
 
@@ -242,7 +244,7 @@ if __name__ == '__main__':
     entree = "Qui est le maire de New York ?"
     print(reponse(entree))
 
-    entree = "Qui est le maire de Marseille ?"
+    entree = "Qui est le maire de Budapest ?"
     print(reponse(entree))
 
     entree = "Qui est le président des USA ?"
