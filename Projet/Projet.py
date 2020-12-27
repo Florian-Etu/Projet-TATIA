@@ -60,29 +60,34 @@ def reponse(question):
     hotwords = get_hotwords(question)
     createur = ["createur", "créateur", "créateure", "createure", "créatrice", "creatrice", "auteur", "auteure", "autrice", "écrit", "inventé", "inventeur", "inventeuse", "inventeure", "livre", "film"]
     alliance = ["epoux", "époux", "epouse", "épouse", "mari", "femme", "mariée", "marié", "marier", "mariage", "partnaire", "relation", "union"]
+    prog = ["language", "langage", "programmation", "languages", "langages", "programmations", "programation", "program"]
+
     if(len(hotwords)>=2):
 
         #Recherche d'auteur / créateur
         if(any(item in hotwords for item in createur)):
-            auteur = requete_dbpedia_multiple(lookup_keyword(get_hotwords(question)[1], None), "author", "name")
+            auteur = requete_dbpedia_multiple(lookup_keyword(hotwords[1], None), "author", "name")
             if(auteur == "Aucun résultat correspondant à votre recherche.\n" ):
                 return requete_dbpedia_multiple(lookup_keyword(get_hotwords(question)[1], None), "creator", "name")
             return auteur
         
         #Recherche partenaire d'une personne
         if(any(item in hotwords for item in alliance)):
-            partenaire = requete_dbpedia(lookup_keyword(get_hotwords(question)[-1], "person"), "spouse", "name")
+            partenaire = requete_dbpedia(lookup_keyword(hotwords[-1], "person"), "spouse", "name")
             if(partenaire == "Aucun résultat correspondant à votre recherche.\n" ):
-                partenaire = requete_dbpedia(lookup_keyword(get_hotwords(question)[-1], "person"), "partner", "name")
+                partenaire = requete_dbpedia(lookup_keyword(hotwords[-1], "person"), "partner", "name")
                 if(partenaire == "Aucun résultat correspondant à votre recherche.\n" ):
-                    partenaire = requete_dbpedia(lookup_keyword(get_hotwords(question)[-1], "person"), "wife", "name", "dbp")
+                    partenaire = requete_dbpedia(lookup_keyword(hotwords[-1], "person"), "wife", "name", "dbp")
                     if(partenaire == "Aucun résultat correspondant à votre recherche.\n" ):
-                        partenaire = requete_dbpedia(lookup_keyword(get_hotwords(question)[-1], "person"), "husband", "name", "dbp")
+                        partenaire = requete_dbpedia(lookup_keyword(hotwords[-1], "person"), "husband", "name", "dbp")
                     if(partenaire == "Aucun résultat correspondant à votre recherche.\n" ):
-                        partenaire = requete_dbpedia(lookup_keyword(get_hotwords(question)[-1], "person"), "union", "name", "dbp")
+                        partenaire = requete_dbpedia(lookup_keyword(hotwords[-1], "person"), "union", "name", "dbp")
                     if(partenaire == "Aucun résultat correspondant à votre recherche.\n" ):
-                        return requete_dbpedia(lookup_keyword(get_hotwords(question)[-1], "person"), "relationship", "name", "dbp")
+                        return requete_dbpedia(lookup_keyword(hotwords[-1], "person"), "relationship", "name", "dbp")
             return partenaire
+
+        if(any(item in hotwords for item in prog)):
+            return requete_dbpedia_multiple(lookup_keyword(hotwords[-1], "software"), "programmingLanguage", "name")
 
     return exp_reg(nlp(question))
 
@@ -324,13 +329,7 @@ if __name__ == '__main__':
     entree = "Où est ce que se trouve la ville de Tokyo ? "
     print(reponse(entree))
 
-    entree = "Où est ce que se trouve la ville de Grenoble ? "
-    print(reponse(entree))
-
-    entree = "Où est ce que se trouve la ville de Le Caire ? "
-    print(reponse(entree))
-
-    entree = "Dans quel pays se trouve la ville de Le Caire ? "
+    entree = "Dans quel pays se trouve la ville de Grenoble ? "
     print(reponse(entree))
 
     entree = "Où est Le Caire ? "
@@ -349,6 +348,9 @@ if __name__ == '__main__':
     print(reponse(entree))
 
     entree = "Qui était l'épouse du président américain Lincoln ?"
+    print(reponse(entree))
+
+    entree = "En quel langage de programmation a été écrit GIMP ?"
     print(reponse(entree))
 
     """doc = nlp(entree)
