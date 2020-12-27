@@ -109,14 +109,6 @@ def exp_reg(question):
     #https://spacy.io/usage/rule-based-matching
     matcher = Matcher(nlp.vocab)
 
-    #Recherche d'une personne
-    pattern = [{"LOWER": "qui"},{"POS": "AUX"}, {"ENT_TYPE": "PER"}] #QUI + AUXILIAIRE + UN NOM DE PERSONNE (éventuellement prénom + nom de famille) = ON RECHERCHE UNE PERSONNE
-    matcher.add("person", None, pattern)
-    
-    #Recherche d'un lieu
-    pattern = [{"LOWER": "où"}]
-    matcher.add("Lieu", None, pattern)
-
     # Recherche d'une date
     pattern = [{"LOWER":{"REGEX": "année|mois|jour|date"}}] #Si la question contient année ou mois ou jour ou date = date
     pattern2 = [{"LOWER":"quand"}, {"POS": "AUX", "OP": "*"}] #Quand + auxiliaire optionnel = date
@@ -144,9 +136,19 @@ def exp_reg(question):
     pattern2 = [{"LOWER": {"REGEX": "dans"}}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"POS": "PRON", "OP": "*"}, {"POS": "VERB","OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"POS": "ADP", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"}, {"ENT_TYPE": "LOC"}]  # "Dans quel pays se trouve la ville de nomVille? "
     matcher.add("ville", None, pattern, pattern2)
 
-    # "Dans quel pays se trouve la ville de Paris ? "
-    matches = matcher(question)
+    #Recherche développeur
+    pattern = [{"LOWER": {"REGEX": "développé|développée|développer|developpe|developper|développeurs|développeur|developpeur|créer|crée| créée|cree|creer|produit"}}, {"OP": "*"}, {"ENT_TYPE": "MISC"}]
+    matcher.add("developer", None, pattern)
+    
+    #Recherche d'une personne
+    pattern = [{"LOWER": "qui"},{"POS": "AUX"}, {"ENT_TYPE": "PER"}] #QUI + AUXILIAIRE + UN NOM DE PERSONNE (éventuellement prénom + nom de famille) = ON RECHERCHE UNE PERSONNE
+    matcher.add("person", None, pattern)
+    
+    #Recherche d'un lieu
+    pattern = [{"LOWER": "où"}]
+    matcher.add("Lieu", None, pattern)
 
+    matches = matcher(question)
     # Traitement selon type de la question
     for match_id, start, end in matches:
         string_id = nlp.vocab.strings[match_id]  # Get string representation
@@ -179,6 +181,9 @@ def exp_reg(question):
 
         elif(string_id=="voisin"):
             return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], None), "borderingstates", "populatedPlace", "dbp")
+        
+        elif(string_id=="developer"):
+            return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="MISC"][0][0], "videogame"), string_id, "software")
 
 
 def query(q, epr, f='application/json'):
@@ -276,7 +281,7 @@ def requete_dbpedia(requete, predicate, objet, entity_of_type="dbo"):
     if(json_result["results"]["bindings"]):
         return json_result["results"]["bindings"][0]["label"]["value"]+'\n'
     else:
-        return "Aucun résultat correspondant à votre recherche.\n"
+        return json_query["results"]["bindings"][0][predicate]["value"].replace("http://dbpedia.org/resource/", "").replace("_", " ") + '\n'
 
 
 def requete_dbpedia_multiple(requete, predicate, objet, entity_of_type="dbo"):
@@ -290,6 +295,9 @@ def requete_dbpedia_multiple(requete, predicate, objet, entity_of_type="dbo"):
         json_result = json.loads(query("""SELECT ?label WHERE {<""" + resultats_requete[predicate]["value"] + """> rdfs:label ?label. FILTER langMatches(lang(?label),"fr")}""", "http://dbpedia.org/sparql"))
         if(json_result["results"]["bindings"]):
             result += json_result["results"]["bindings"][0]["label"]["value"]+ " et "
+        else:
+            result += resultats_requete[predicate]["value"].replace("http://dbpedia.org/resource/", "").replace("_", " ") + " et "
+
     return result[:-3]+'\n'
     
 
@@ -324,6 +332,9 @@ if __name__ == '__main__':
     print(reponse(entree))
 
     entree = "Qui est le maire de Marseille ?"
+    print(reponse(entree))
+
+    entree = "Qui est le maire de Nice ?"
     print(reponse(entree))
 
     entree = "Qui est le président des USA ?"
@@ -369,6 +380,12 @@ if __name__ == '__main__':
     print(reponse(entree))
 
     entree = "Qui est le créateur de Goofy ?"
+    print(reponse(entree))
+
+    entree = "Qui a développé World of Warcraft ?"
+    print(reponse(entree))
+
+    entree = "Qui a produit Mario 64 ?"
     print(reponse(entree))
 
     entree = "Qui était l'épouse du président américain Lincoln ?"
