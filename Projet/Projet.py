@@ -117,10 +117,15 @@ def exp_reg(question):
     pattern = [{"LOWER":{"REGEX": "président|president|maire|chef|dirigeant|roi|renne|chancelier|chanceliere|ministre"}}, {"POS": "ADP", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"}, {"ENT_TYPE": "LOC"}] #"maire de...", "président de la..."
     matcher.add("Leader_pays", None, pattern)
 
-    #Recherche voisins
+    # Recherche voisins
     pattern = [{"LOWER":{"REGEX": "voisin|frontière|frontiere|autour|voisins"}}, {"POS": "ADP", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"},{"ENT_TYPE": "LOC"}] 
     matcher.add("voisin", None, pattern)
-    
+
+    # Recherche dans quel pays se trouve une ville
+    #pattern = [{"LOWER": {"REGEX": "où"}}, {"POS": "ADP", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"}, {"ENT_TYPE": "LOC"}]
+    pattern = [{"LOWER": {"REGEX": "où"}}, {"POS": "AUX", "OP": "*"}, {"POS": "PRON", "OP": "*"}, {"POS": "VERB","OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"POS": "ADP", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"}, {"ENT_TYPE": "LOC"}]
+    matcher.add("ville", None, pattern)
+
     matches = matcher(question)
 
     # Traitement selon type de la question
@@ -150,8 +155,16 @@ def exp_reg(question):
         elif(string_id=="website"):
             return requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="ORG"][0][0], None), "wikiPageExternalLink", string_id)
 
+        elif(string_id == "ville"):
+            print("Voilààààààààààà")
+            return requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_ == "LOC"][0][0], None), "country",string_id)
+
         elif(string_id=="voisin"):
             return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], None), "borderingstates", "populatedPlace", "dbp")
+
+"""requete:"Cairo"
+predicate:country
+objet:"Cairo" """
 
 
 def query(q, epr, f='application/json'):
@@ -268,7 +281,35 @@ def requete_dbpedia_multiple(requete, predicate, objet, entity_of_type="dbo"):
 
 if __name__ == '__main__':
     #entree = input()
-    entree = "Quel est le site web de Forbes ?"
+
+    entree = "Où est ce que se trouve la ville de Paris ? "
+    print(reponse(entree))
+
+    entree = "Où est ce que se trouve la ville de Tokyo ? "
+    print(reponse(entree))
+
+    entree = "Où est ce que se trouve la ville de Grenoble ? "
+    print(reponse(entree))
+
+    entree = "Où est ce que se trouve la ville de Le Caire ? "
+    print(reponse(entree))
+
+    """print("-------------------------------------------------------------------------------------------------------------")
+    doc = nlp(entree)
+    print(PoSTagger(doc))
+
+    print("-------------------------------------------------------------------------------------------------------------")
+    entree = "Qui est le maire de Paris ?"
+    doc = nlp(entree)
+    print(PoSTagger(doc)) """
+
+    #print(spacy.explain("ADV"))
+    #print(reponse(entree))
+
+    #print(get_hotwords("Où est ce que se trouve la ville du Caire ?"))
+    #print(get_hotwords("Quelle est la capitale de l'Égypte ?"))
+
+    """entree = "Quel est le site web de Forbes ?"
     print(reponse(entree))
     
     entree = "Qui est le créateur de Wikipedia ?"
@@ -320,7 +361,7 @@ if __name__ == '__main__':
     print(reponse(entree))
 
     entree = "Qui était l'épouse du président américain Lincoln ?"
-    print(reponse(entree))
+    print(reponse(entree))"""
 
     """doc = nlp(entree)
     #print(entree)
