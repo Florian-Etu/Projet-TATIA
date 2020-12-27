@@ -56,14 +56,24 @@ def get_hotwords(text):
 
 def reponse(question):
     print(question)
+    question = question.replace("l'", "l' ")
     hotwords = get_hotwords(question)
     createur = ["createur", "créateur", "créateure", "createure", "créatrice", "creatrice", "auteur", "auteure", "autrice", "écrit", "inventé", "inventeur", "inventeuse", "inventeure", "livre", "film"]
+    alliance = ["epoux", "époux", "epouse", "épouse", "mari", "femme"]
     if(len(hotwords)>=2):
-        if(hotwords[0] in createur):
+
+        if(any(item in hotwords for item in createur)):
             createur = requete_dbpedia_multiple(lookup_keyword(get_hotwords(question)[1], None), "author", "name")
             if(createur == "Aucun résultat correspondant à votre recherche.\n" ):
                 return requete_dbpedia_multiple(lookup_keyword(get_hotwords(question)[1], None), "creator", "name")
             return createur
+        
+        if(any(item in hotwords for item in alliance)):
+            partenaire = requete_dbpedia(lookup_keyword(get_hotwords(question)[-1], "person"), "spouse", "name")
+            if(partenaire == "Aucun résultat correspondant à votre recherche.\n" ):
+                return requete_dbpedia(lookup_keyword(get_hotwords(question)[-1], "person"), "partner", "name")
+            return partenaire
+
     return exp_reg(nlp(question))
 
 
@@ -86,19 +96,19 @@ def exp_reg(question):
     matcher.add("Date", None, pattern, pattern2) 
 
     # Recherche d'un site web
-    pattern = [{"LOWER":{"REGEX": "web|adresse|site|accueil|page"}}, {"POS": "ADP", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"}, {"ENT_TYPE": "ORG"}]
+    pattern = [{"LOWER":{"REGEX": "web|adresse|site|accueil|page"}}, {"POS": "ADP", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"}, {"ENT_TYPE": "ORG"}]
     matcher.add("website", None, pattern) 
 
     # Recherche leader d'une ville
-    pattern = [{"LOWER":{"REGEX": "maire"}}, {"POS": "ADP", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"}, {"ENT_TYPE": "LOC"}]
+    pattern = [{"LOWER":{"REGEX": "maire"}}, {"POS": "ADP", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"}, {"ENT_TYPE": "LOC"}]
     matcher.add("mayor", None, pattern)
 
     # Recherche leader d'un pays
-    pattern = [{"LOWER":{"REGEX": "président|president|maire|chef|dirigeant|roi|renne|chancelier|chanceliere|ministre"}}, {"POS": "ADP", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"}, {"ENT_TYPE": "LOC"}] #"maire de...", "président de la..."
+    pattern = [{"LOWER":{"REGEX": "président|president|maire|chef|dirigeant|roi|renne|chancelier|chanceliere|ministre"}}, {"POS": "ADP", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"}, {"ENT_TYPE": "LOC"}] #"maire de...", "président de la..."
     matcher.add("Leader_pays", None, pattern)
 
     #Recherche voisins
-    pattern = [{"LOWER":{"REGEX": "voisin|frontière|frontiere|autour|voisins"}}] 
+    pattern = [{"LOWER":{"REGEX": "voisin|frontière|frontiere|autour|voisins"}}, {"POS": "ADP", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"},{"ENT_TYPE": "LOC"}] 
     matcher.add("voisin", None, pattern)
     
     matches = matcher(question)
@@ -287,7 +297,7 @@ if __name__ == '__main__':
     entree = "Qui est la chanceliere de l'Allemagne ?"
     print(reponse(entree))
 
-    entree = "Quels sont les états voisins de l' Illinois ?"
+    entree = "Quels sont les états voisins de l'Illinois ?"
     print(reponse(entree))
 
     entree = "Quels sont les états autour du Kansas ?"
@@ -299,6 +309,8 @@ if __name__ == '__main__':
     entree = "Qui est le créateur de Goofy ?"
     print(reponse(entree))
 
+    entree = "Qui était l'épouse du président américain Lincoln ?"
+    print(reponse(entree))
 
     """doc = nlp(entree)
     #print(entree)
