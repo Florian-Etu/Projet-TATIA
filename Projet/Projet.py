@@ -61,6 +61,7 @@ def reponse(question):
     createur = ["createur", "créateur", "créateure", "createure", "créatrice", "creatrice", "auteur", "auteure", "autrice", "écrit", "inventé", "inventeur", "inventeuse", "inventeure", "livre", "film"]
     alliance = ["epoux", "époux", "epouse", "épouse", "mari", "femme", "mariée", "marié", "marier", "mariage", "partnaire", "relation", "union"]
     prog = ["language", "langage", "programmation", "languages", "langages", "programmations", "programation", "program"]
+    capital = ["capitale", "capital"]
 
     if(len(hotwords)>=2):
 
@@ -70,7 +71,12 @@ def reponse(question):
             if(auteur == "Aucun résultat correspondant à votre recherche.\n" ):
                 return requete_dbpedia_multiple(lookup_keyword(get_hotwords(question)[1], None), "creator", "name")
             return auteur
-        
+
+        # Recherche de la capital d'un pays
+        if (any(item in hotwords for item in capital)):
+            capital = requete_dbpedia(lookup_keyword(get_hotwords(question)[-1], None), "capital", "object")
+            return capital
+
         #Recherche partenaire d'une personne
         if(any(item in hotwords for item in alliance)):
             partenaire = requete_dbpedia(lookup_keyword(hotwords[-1], "person"), "spouse", "name")
@@ -351,6 +357,9 @@ if __name__ == '__main__':
     print(reponse(entree))
 
     entree = "En quel langage de programmation a été écrit GIMP ?"
+    print(reponse(entree))
+
+    entree = "Quelle est la capitale de l'Égypte ?"
     print(reponse(entree))
 
     """doc = nlp(entree)
