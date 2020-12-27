@@ -42,7 +42,7 @@ def NER(nlp):
     return entities
 
 
-def get_hot_words(text):
+def get_hotwords(text):
     result = []
     pos_tag = ['PROPN', 'ADJ', 'NOUN'] 
     doc = nlp(text.lower()) 
@@ -56,13 +56,13 @@ def get_hot_words(text):
 
 def reponse(question):
     print(question)
-    hotwords = get_hot_words(question)
+    hotwords = get_hotwords(question)
     createur = ["createur", "créateur", "créateure", "createure", "créatrice", "creatrice", "auteur", "auteure", "autrice", "écrit", "inventé", "inventeur", "inventeuse", "inventeure", "livre", "film"]
     if(len(hotwords)>=2):
         if(hotwords[0] in createur):
-            createur = requete_dbpedia_multiple(lookup_keyword(get_hot_words(question)[1], None), "author", "name")
+            createur = requete_dbpedia_multiple(lookup_keyword(get_hotwords(question)[1], None), "author", "name")
             if(createur == "Aucun résultat correspondant à votre recherche.\n" ):
-                return requete_dbpedia_multiple(lookup_keyword(get_hot_words(question)[1], None), "creator", "name")
+                return requete_dbpedia_multiple(lookup_keyword(get_hotwords(question)[1], None), "creator", "name")
             return createur
     return exp_reg(nlp(question))
 
@@ -280,7 +280,7 @@ if __name__ == '__main__':
     #print(entree)
     PoSTagger(doc)
     print(token(doc))
-    sortie = get_hot_words(entree)
+    sortie = get_hotwords(entree)
     print(sortie)
     NER(doc)
     print(type_question(doc))
