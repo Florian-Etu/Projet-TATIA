@@ -59,19 +59,29 @@ def reponse(question):
     question = question.replace("l'", "l' ")
     hotwords = get_hotwords(question)
     createur = ["createur", "créateur", "créateure", "createure", "créatrice", "creatrice", "auteur", "auteure", "autrice", "écrit", "inventé", "inventeur", "inventeuse", "inventeure", "livre", "film"]
-    alliance = ["epoux", "époux", "epouse", "épouse", "mari", "femme"]
+    alliance = ["epoux", "époux", "epouse", "épouse", "mari", "femme", "mariée", "marié", "marier", "mariage", "partnaire", "relation", "union"]
     if(len(hotwords)>=2):
 
+        #Recherche d'auteur / créateur
         if(any(item in hotwords for item in createur)):
-            createur = requete_dbpedia_multiple(lookup_keyword(get_hotwords(question)[1], None), "author", "name")
-            if(createur == "Aucun résultat correspondant à votre recherche.\n" ):
+            auteur = requete_dbpedia_multiple(lookup_keyword(get_hotwords(question)[1], None), "author", "name")
+            if(auteur == "Aucun résultat correspondant à votre recherche.\n" ):
                 return requete_dbpedia_multiple(lookup_keyword(get_hotwords(question)[1], None), "creator", "name")
-            return createur
+            return auteur
         
+        #Recherche partenaire d'une personne
         if(any(item in hotwords for item in alliance)):
             partenaire = requete_dbpedia(lookup_keyword(get_hotwords(question)[-1], "person"), "spouse", "name")
             if(partenaire == "Aucun résultat correspondant à votre recherche.\n" ):
-                return requete_dbpedia(lookup_keyword(get_hotwords(question)[-1], "person"), "partner", "name")
+                partenaire = requete_dbpedia(lookup_keyword(get_hotwords(question)[-1], "person"), "partner", "name")
+                if(partenaire == "Aucun résultat correspondant à votre recherche.\n" ):
+                    partenaire = requete_dbpedia(lookup_keyword(get_hotwords(question)[-1], "person"), "wife", "name", "dbp")
+                    if(partenaire == "Aucun résultat correspondant à votre recherche.\n" ):
+                        partenaire = requete_dbpedia(lookup_keyword(get_hotwords(question)[-1], "person"), "husband", "name", "dbp")
+                    if(partenaire == "Aucun résultat correspondant à votre recherche.\n" ):
+                        partenaire = requete_dbpedia(lookup_keyword(get_hotwords(question)[-1], "person"), "union", "name", "dbp")
+                    if(partenaire == "Aucun résultat correspondant à votre recherche.\n" ):
+                        return requete_dbpedia(lookup_keyword(get_hotwords(question)[-1], "person"), "relationship", "name", "dbp")
             return partenaire
 
     return exp_reg(nlp(question))
