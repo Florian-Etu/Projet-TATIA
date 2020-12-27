@@ -253,7 +253,7 @@ def requete_dbpedia(requete, predicate, objet, entity_of_type="dbo"):
     if(objet=="website"):
         return json_query["results"]["bindings"][0][predicate]["value"] + '\n'
 
-    json_result=json.loads(query("""SELECT ?label WHERE {<""" + json_query["results"]["bindings"][0][predicate]["value"] + """> rdfs:label ?label. FILTER langMatches(lang(?label),"en")}""", "http://dbpedia.org/sparql"))
+    json_result=json.loads(query("""SELECT ?label WHERE {<""" + json_query["results"]["bindings"][0][predicate]["value"] + """> rdfs:label ?label. FILTER langMatches(lang(?label),"fr")}""", "http://dbpedia.org/sparql"))
     if(json_result["results"]["bindings"]):
         return json_result["results"]["bindings"][0]["label"]["value"]+'\n'
     else:
@@ -268,7 +268,7 @@ def requete_dbpedia_multiple(requete, predicate, objet, entity_of_type="dbo"):
         return "Aucun résultat correspondant à votre recherche.\n"
 
     for resultats_requete in json_query["results"]["bindings"]:
-        json_result = json.loads(query("""SELECT ?label WHERE {<""" + resultats_requete[predicate]["value"] + """> rdfs:label ?label. FILTER langMatches(lang(?label),"en")}""", "http://dbpedia.org/sparql"))
+        json_result = json.loads(query("""SELECT ?label WHERE {<""" + resultats_requete[predicate]["value"] + """> rdfs:label ?label. FILTER langMatches(lang(?label),"fr")}""", "http://dbpedia.org/sparql"))
         if(json_result["results"]["bindings"]):
             result += json_result["results"]["bindings"][0]["label"]["value"]+ " et "
     return result[:-3]+'\n'
@@ -276,18 +276,6 @@ def requete_dbpedia_multiple(requete, predicate, objet, entity_of_type="dbo"):
 
 if __name__ == '__main__':
     #entree = input()
-
-    entree = "Où est ce que se trouve la ville de Paris ? "
-    print(reponse(entree))
-
-    entree = "Où est ce que se trouve la ville de Tokyo ? "
-    print(reponse(entree))
-
-    entree = "Où est ce que se trouve la ville de Grenoble ? "
-    print(reponse(entree))
-
-    entree = "Où est ce que se trouve la ville de Le Caire ? "
-    print(reponse(entree))
 
     entree = "Quel est le site web de Forbes ?"
     print(reponse(entree))
@@ -326,6 +314,18 @@ if __name__ == '__main__':
     print(reponse(entree))
 
     entree = "Qui est la chanceliere de l'Allemagne ?"
+    print(reponse(entree))
+
+    entree = "Où est ce que se trouve la ville de Paris ? "
+    print(reponse(entree))
+
+    entree = "Où est ce que se trouve la ville de Tokyo ? "
+    print(reponse(entree))
+
+    entree = "Où est ce que se trouve la ville de Grenoble ? "
+    print(reponse(entree))
+
+    entree = "Où est ce que se trouve la ville de Le Caire ? "
     print(reponse(entree))
 
     entree = "Quels sont les états voisins de l'Illinois ?"
