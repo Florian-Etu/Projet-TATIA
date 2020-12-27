@@ -62,19 +62,20 @@ def reponse(question):
     alliance = ["epoux", "époux", "epouse", "épouse", "mari", "femme", "mariée", "marié", "marier", "mariage", "partnaire", "relation", "union"]
     prog = ["language", "langage", "programmation", "languages", "langages", "programmations", "programation", "program"]
     capital = ["capitale", "capital"]
+    monnaie = ["devise", "devises", "monnaie", "monnaies"]
 
     if(len(hotwords)>=2):
 
         #Recherche d'auteur / créateur
         if(any(item in hotwords for item in createur)):
-            auteur = requete_dbpedia_multiple(lookup_keyword(hotwords[1], None), "author", "name")
+            auteur = requete_dbpedia_multiple(lookup_keyword(hotwords[-1], None), "author", "name")
             if(auteur == "Aucun résultat correspondant à votre recherche.\n" ):
-                return requete_dbpedia_multiple(lookup_keyword(get_hotwords(question)[1], None), "creator", "name")
+                return requete_dbpedia_multiple(lookup_keyword(hotwords[-1], None), "creator", "name")
             return auteur
 
         # Recherche de la capital d'un pays
-        if (any(item in hotwords for item in capital)):
-            capital = requete_dbpedia(lookup_keyword(get_hotwords(question)[-1], None), "capital", "object")
+        if (any(item in hotwords for item in capital) or ("grande" in hotwords and "ville" in hotwords)):
+            capital = requete_dbpedia(lookup_keyword(hotwords[-1], "country"), "capital", "object")
             return capital
 
         #Recherche partenaire d'une personne
@@ -92,8 +93,13 @@ def reponse(question):
                         return requete_dbpedia(lookup_keyword(hotwords[-1], "person"), "relationship", "name", "dbp")
             return partenaire
 
+        #Recherche language de programmation d'un logiciel
         if(any(item in hotwords for item in prog)):
-            return requete_dbpedia_multiple(lookup_keyword(hotwords[-1], "software"), "programmingLanguage", "name")
+            return requete_dbpedia_multiple(lookup_keyword(hotwords[-1], "software"), "programmingLanguage", "software")
+
+        #Recherche devise / monnaie d'un pays
+        if(any(item in hotwords for item in monnaie)):
+            return requete_dbpedia_multiple(lookup_keyword(hotwords[-1], "country"), "currency", "populatedPlace")
 
     return exp_reg(nlp(question))
 
@@ -340,11 +346,23 @@ if __name__ == '__main__':
 
     entree = "Où est Le Caire ? "
     print(reponse(entree))
+    
+    entree = "Quelle est la capitale de l'Égypte ?"
+    print(reponse(entree))
+    
+    entree = "Quelle est la plus grande ville de la France ?"
+    print(reponse(entree)) 
 
     entree = "Quels sont les états voisins de l'Illinois ?"
     print(reponse(entree))
 
     entree = "Quels sont les états autour du Kansas ?"
+    print(reponse(entree))
+    
+    entree = "Quel est la devise de la Tchéquie ?"
+    print(reponse(entree))
+
+    entree = "Quel est la monnaie de la France ?"
     print(reponse(entree))
 
     entree = "Qui a écrit le livre Frankenstein ?"
@@ -357,9 +375,6 @@ if __name__ == '__main__':
     print(reponse(entree))
 
     entree = "En quel langage de programmation a été écrit GIMP ?"
-    print(reponse(entree))
-
-    entree = "Quelle est la capitale de l'Égypte ?"
     print(reponse(entree))
 
     """doc = nlp(entree)
