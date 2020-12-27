@@ -86,16 +86,20 @@ def exp_reg(question):
     matcher.add("Date", None, pattern, pattern2) 
 
     # Recherche d'un site web
-    pattern = [{"LOWER":{"REGEX": "web|adresse|site|accueil|page"}}, {"POS": "ADP", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"ENT_TYPE": "ORG"}]
+    pattern = [{"LOWER":{"REGEX": "web|adresse|site|accueil|page"}}, {"POS": "ADP", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"}, {"ENT_TYPE": "ORG"}]
     matcher.add("website", None, pattern) 
 
     # Recherche leader d'une ville
-    pattern = [{"LOWER":{"REGEX": "maire"}}, {"POS": "ADP", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"ENT_TYPE": "LOC"}]
+    pattern = [{"LOWER":{"REGEX": "maire"}}, {"POS": "ADP", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"}, {"ENT_TYPE": "LOC"}]
     matcher.add("mayor", None, pattern)
 
     # Recherche leader d'un pays
-    pattern = [{"LOWER":{"REGEX": "président|president|maire|chef|dirigeant|roi|renne|chancelier|chanceliere|ministre"}}, {"POS": "ADP", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"ENT_TYPE": "LOC"}] #"maire de...", "président de la..."
+    pattern = [{"LOWER":{"REGEX": "président|president|maire|chef|dirigeant|roi|renne|chancelier|chanceliere|ministre"}}, {"POS": "ADP", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"}, {"ENT_TYPE": "LOC"}] #"maire de...", "président de la..."
     matcher.add("Leader_pays", None, pattern)
+
+    #Recherche voisins
+    pattern = [{"LOWER":{"REGEX": "voisin|frontière|frontiere|autour|voisins"}}] 
+    matcher.add("voisin", None, pattern)
     
     matches = matcher(question)
 
@@ -125,6 +129,9 @@ def exp_reg(question):
 
         elif(string_id=="website"):
             return requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="ORG"][0][0], None), "wikiPageExternalLink", string_id)
+
+        elif(string_id=="voisin"):
+            return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], None), "borderingstates", "populatedPlace", "dbp")
 
 
 def query(q, epr, f='application/json'):
@@ -185,7 +192,7 @@ def get_abstract(requete):
     return json_query["results"]["bindings"][0]["abstract"]["value"]+'\n'
 
 
-def json_load(requete, predicate, objet):
+def json_load(requete, predicate, objet, entity_of_type):
     json_query = json.loads(query("""
         prefix dbpedia: <http://dbpedia.org/resource/>
         prefix dbpedia-owl: <http://dbpedia.org/ontology/>
@@ -195,11 +202,22 @@ def json_load(requete, predicate, objet):
         VALUES ?""" + objet + '{' + '"' + requete + '"' + """@en }
         }
         LIMIT 10""", "http://dbpedia.org/sparql"))
+
+    if(entity_of_type=="dbp"):
+        json_query = json.loads(query("""
+        prefix dbpedia: <http://dbpedia.org/resource/>
+        prefix dbp: <http://dbpedia.org/property/>
+        SELECT DISTINCT ?""" + predicate + """ WHERE { 
+        [ rdfs:label ?""" + objet + """
+        ; dbp:""" + predicate + '?' + predicate + """] .
+        VALUES ?""" + objet + '{' + '"' + requete + '"' + """@en }
+        }
+        LIMIT 10""", "http://dbpedia.org/sparql"))
     return json_query
 
 
-def requete_dbpedia(requete, predicate, objet):
-    json_query = json_load(requete, predicate, objet)
+def requete_dbpedia(requete, predicate, objet, entity_of_type="dbo"):
+    json_query = json_load(requete, predicate, objet, entity_of_type)
 
     if(not json_query["results"]["bindings"]):
         return "Aucun résultat correspondant à votre recherche.\n"
@@ -214,9 +232,9 @@ def requete_dbpedia(requete, predicate, objet):
         return "Aucun résultat correspondant à votre recherche.\n"
 
 
-def requete_dbpedia_multiple(requete, predicate, objet):
+def requete_dbpedia_multiple(requete, predicate, objet, entity_of_type="dbo"):
     result=""
-    json_query = json_load(requete, predicate, objet)
+    json_query = json_load(requete, predicate, objet, entity_of_type)
 
     if(not json_query["results"]["bindings"]):
         return "Aucun résultat correspondant à votre recherche.\n"
@@ -267,6 +285,12 @@ if __name__ == '__main__':
     print(reponse(entree))
 
     entree = "Qui est la chanceliere de l'Allemagne ?"
+    print(reponse(entree))
+
+    entree = "Quels sont les états voisins de l' Illinois ?"
+    print(reponse(entree))
+
+    entree = "Quels sont les états autour du Kansas ?"
     print(reponse(entree))
 
     entree = "Qui a écrit le livre Frankenstein ?"
