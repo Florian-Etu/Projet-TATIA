@@ -156,15 +156,10 @@ def exp_reg(question):
             return requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="ORG"][0][0], None), "wikiPageExternalLink", string_id)
 
         elif(string_id == "ville"):
-            print("Voilààààààààààà")
             return requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_ == "LOC"][0][0], None), "country",string_id)
 
         elif(string_id=="voisin"):
             return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], None), "borderingstates", "populatedPlace", "dbp")
-
-"""requete:"Cairo"
-predicate:country
-objet:"Cairo" """
 
 
 def query(q, epr, f='application/json'):
@@ -236,7 +231,7 @@ def json_load(requete, predicate, objet, entity_of_type):
         }
         LIMIT 10""", "http://dbpedia.org/sparql"))
 
-    if(entity_of_type=="dbp"):
+    if(entity_of_type == "dbp"):
         json_query = json.loads(query("""
         prefix dbpedia: <http://dbpedia.org/resource/>
         prefix dbp: <http://dbpedia.org/property/>
@@ -266,16 +261,16 @@ def requete_dbpedia(requete, predicate, objet, entity_of_type="dbo"):
 
 
 def requete_dbpedia_multiple(requete, predicate, objet, entity_of_type="dbo"):
-    result=""
+    result = ""
     json_query = json_load(requete, predicate, objet, entity_of_type)
 
     if(not json_query["results"]["bindings"]):
         return "Aucun résultat correspondant à votre recherche.\n"
 
     for resultats_requete in json_query["results"]["bindings"]:
-        json_result=json.loads(query("""SELECT ?label WHERE {<""" + resultats_requete[predicate]["value"] + """> rdfs:label ?label. FILTER langMatches(lang(?label),"en")}""", "http://dbpedia.org/sparql"))
+        json_result = json.loads(query("""SELECT ?label WHERE {<""" + resultats_requete[predicate]["value"] + """> rdfs:label ?label. FILTER langMatches(lang(?label),"en")}""", "http://dbpedia.org/sparql"))
         if(json_result["results"]["bindings"]):
-            result+=json_result["results"]["bindings"][0]["label"]["value"]+ " et "
+            result += json_result["results"]["bindings"][0]["label"]["value"]+ " et "
     return result[:-3]+'\n'
     
 
@@ -294,22 +289,7 @@ if __name__ == '__main__':
     entree = "Où est ce que se trouve la ville de Le Caire ? "
     print(reponse(entree))
 
-    """print("-------------------------------------------------------------------------------------------------------------")
-    doc = nlp(entree)
-    print(PoSTagger(doc))
-
-    print("-------------------------------------------------------------------------------------------------------------")
-    entree = "Qui est le maire de Paris ?"
-    doc = nlp(entree)
-    print(PoSTagger(doc)) """
-
-    #print(spacy.explain("ADV"))
-    #print(reponse(entree))
-
-    #print(get_hotwords("Où est ce que se trouve la ville du Caire ?"))
-    #print(get_hotwords("Quelle est la capitale de l'Égypte ?"))
-
-    """entree = "Quel est le site web de Forbes ?"
+    entree = "Quel est le site web de Forbes ?"
     print(reponse(entree))
     
     entree = "Qui est le créateur de Wikipedia ?"
@@ -361,7 +341,7 @@ if __name__ == '__main__':
     print(reponse(entree))
 
     entree = "Qui était l'épouse du président américain Lincoln ?"
-    print(reponse(entree))"""
+    print(reponse(entree))
 
     """doc = nlp(entree)
     #print(entree)
