@@ -66,7 +66,7 @@ def reponse(question):
             capital = requete_dbpedia(lookup_keyword(hotwords[-1], "country"), "capital")
             return capital
 
-        #Recherche partenaire d'une personne
+        # Recherche partenaire d'une personne
         if(any(item in hotwords for item in alliance)):
             partenaire = requete_dbpedia(lookup_keyword(hotwords[-1], "person"), "spouse")
             if(partenaire == "Aucun résultat correspondant à votre recherche.\n" ):
@@ -81,11 +81,11 @@ def reponse(question):
                         return requete_dbpedia(lookup_keyword(hotwords[-1], "person"), "relationship", "dbp")
             return partenaire
 
-        #Recherche language de programmation d'un logiciel
+        # Recherche language de programmation d'un logiciel
         if(any(item in hotwords for item in prog)):
             return requete_dbpedia_multiple(lookup_keyword(hotwords[-1], "software"), "programmingLanguage")
 
-        #Recherche devise / monnaie d'un pays
+        # Recherche devise / monnaie d'un pays
         if(any(item in hotwords for item in monnaie)):
             return requete_dbpedia_multiple(lookup_keyword(hotwords[-1], "country"), "currency")
 
@@ -120,39 +120,39 @@ def exp_reg(question):
 
     # Recherche dans quel pays se trouve une ville ou un lieu
     pattern = [{"LOWER": {"REGEX": "où"}}, {"POS": "AUX", "OP": "*"}, {"POS": "PRON", "OP": "*"}, {"POS": "VERB","OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"POS": "ADP", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"}, {"ENT_TYPE": "LOC"}]  # Où est ce que se trouve la ville de nomVille ? et "Où est nomVille ?"
-    pattern2 = [{"LOWER": {"REGEX": "dans"}}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"POS": "PRON", "OP": "*"}, {"POS": "VERB","OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"POS": "ADP", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"}, {"ENT_TYPE": "LOC"}]  # "Dans quel pays se trouve la ville de nomVille? "
+    pattern2 = [{"LOWER": {"REGEX": "dans"}}, {"POS": "ADJ", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"POS": "PRON", "OP": "*"}, {"POS": "VERB","OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"POS": "ADP", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"}, {"ENT_TYPE": "LOC"}]  # "Dans quel pays se trouve la ville de nomVille? "
     matcher.add("pays", None, pattern, pattern2)
 
-    #Recherche langues pays
+    # Recherche langues pays
     pattern = [{"LOWER": {"REGEX": "langues?|parl[ée]r?e?s?"}}, {"OP": "*"}, {"ENT_TYPE": "LOC"}]
     matcher.add("langue", None, pattern)
 
-    #Recherche d'une appartenance / possession
+    # Recherche d'une appartenance / possession
     pattern = [{"LOWER": {"REGEX": "poss[èe]den?t?|app?artienn?e?n?t|app?artenance|possess?ions?"}}, {"OP": "*"}, {"ENT_TYPE": "MISC"}]
     pattern2 = [{"LOWER": {"REGEX": "poss[èe]den?t?|app?artienn?e?n?t|app?artenance|possess?ions?"}}, {"OP": "*"}, {"ENT_TYPE": "ORG"}]
     matcher.add("appartenance", None, pattern, pattern2)
 
-    #Recherche gagnant de prix
+    # Recherche gagnant de prix
     pattern = [{"LOWER": {"REGEX": "gagn[ée]e?s?r?"}}, {"OP": "*"}, {"ENT_TYPE": "ORG"}]
     matcher.add("awards", None, pattern)
 
-    #Recherche d'un créateur / auteur / développeur
+    # Recherche d'un créateur / auteur / développeur
     pattern = [{"LOWER": {"REGEX": "cr[ée]ateure?s?|cr[ée]atrice|auteure?|autrice|[ée]crite?|invent[ée]e?|inventeure?|inventeuse|livres?|d[ée]velop?pée?|d[ée]velop?per|d[ée]veloppeur?s?e?s?|cr[ée]é?e?r?|produits?|jeux?|videos?|vid[ée]os?"}}, {"OP": "*"}, {"ENT_TYPE": "MISC"}]
     matcher.add("createur", None, pattern, pattern2)
 
-    #Recherche de concepteur / designer
+    # Recherche de concepteur / designer
     pattern = [{"LOWER": {"REGEX": "con[çc]ue?s?|design[ée]e?s?|dessin[ée]e?r?s?|construit?e?s?|constructions?"}}, {"POS": "DET", "OP": "*"}, {"ENT_TYPE": "LOC"}]
     matcher.add("concepteur", None, pattern)
 
-    #Recherche d'acteurs
+    # Recherche d'acteurs
     pattern = [{"LOWER": {"REGEX": "acteure?s?|actrices?"}}, {"OP": "*"}, {"ENT_TYPE": "MISC"}]
     matcher.add("acteur", None, pattern)
 
-    #Recherche cause de décès
+    # Recherche cause de décès
     pattern = [{"LOWER": {"REGEX": "d[ée]c[èée]s?|d[ée]c[ée]d[eé]e?r?|morte?s?|mourire?"}}, {"OP": "*"}, {"ENT_TYPE": "PER"}]
     matcher.add("deces", None, pattern)
     
-    #Recherche d'une personne
+    # Recherche d'une personne
     pattern = [{"LOWER": "qui"},{"POS": "AUX"}, {"ENT_TYPE": "PER"}] #QUI + AUXILIAIRE + UN NOM DE PERSONNE (éventuellement prénom + nom de famille) = ON RECHERCHE UNE PERSONNE
     matcher.add("person", None, pattern)
 
@@ -187,7 +187,15 @@ def exp_reg(question):
         elif(string_id == "pays"):
             if("lac" in question.text):
                 return requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_ == "LOC"][0][0], "lake"), "country")
-            return requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_ == "LOC"][0][0], None), "country")
+
+            plusieurs = ["quelles","quels","sont","quel"] #quel peut etre utiliser pour representer plusieurs pays(dans quel pays se trouve ... :le résultat peut etre plusieurs pays)
+            existance = ["commence", "source", "origine"]
+            if (any(item in question.text for item in existance)):
+                return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_ == "LOC"][0][0], None),"sourceCountry")
+            elif(any(item in question.text for item in plusieurs)):
+                return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_ == "LOC"][0][0],None), "country")
+            else:
+                return requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_ == "LOC"][0][0], None), "country")
 
         elif(string_id=="voisin"):
             return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], None), "borderingstates", "dbp")
@@ -357,7 +365,7 @@ if __name__ == '__main__':
     spacy.prefer_gpu()
     nlp = spacy.load("fr_core_news_lg")
 
-    #Configurez True si vous souhaitez afficher des exemples de questions pré-configurés, false sinon
+    # Configurez True si vous souhaitez afficher des exemples de questions pré-configurés, false sinon
     exemple_questionsxml = True #Exemples tirées du jeu de données fourni: questions.xml
     exemple_autres = True #Autres exemples pré-configurées
 
@@ -369,6 +377,9 @@ if __name__ == '__main__':
         print(reponse(question))
 
         question = "Dans quel pays commence le Nil ?"
+        print(reponse(question))
+
+        question = "Dans quel pays se trouve le Nil ?"
         print(reponse(question))
 
         question = "Quel est l'endroit le plus haut du Karakoram ?"
