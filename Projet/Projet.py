@@ -1,5 +1,5 @@
 # https://www.stat4decision.com/fr/traitement-langage-naturel-francais-tal-nlp/
-# Ligne de commande: "pip install spacy" + "python -m spacy download fr_core_news_lg" + "pip install bs4" + "pip install lxml" + "pip install deep-translator" + "pip install tkinter"
+# Ligne de commande: "pip install spacy" + "python -m spacy download fr_core_news_lg" + "pip install bs4" + "pip install lxml" + "pip install deep-translator"
 # Lancer ce programme pour vérifier la bonne installation
 
 import spacy
@@ -51,7 +51,7 @@ def get_hotwords(text):
 
 
 def reponse(question):
-    question = question.replace("l'", "l' ")
+    question = question.replace("l'", "l' ").replace("\n","").replace("\r","")
     hotwords = get_hotwords(question)
     alliance = ["epoux", "époux", "epouse", "épouse", "mari", "femme", "mariée", "marié", "marier", "mariage", "partnaire", "relation", "union"]
     prog = ["language", "langage", "programmation", "languages", "langages", "programmations", "programation", "program"]
@@ -377,6 +377,7 @@ def send(msg=""):
     if not msg:
         msg = EntryBox.get("1.0",'end-1c').strip()
     EntryBox.delete("0.0",END)
+    
 
     if msg != '':
         ChatLog.config(state=NORMAL)
@@ -401,7 +402,6 @@ def affichage_reponse(question, gui=True):
         else:
             print(question)
             print(reponse(question))
-
     
 
 if __name__ == '__main__':
@@ -409,7 +409,11 @@ if __name__ == '__main__':
     nlp = spacy.load("fr_core_news_lg")
 
     #Configurez True si vous souhaitez activer l'interface graphique (false sinon)
-    gui = True
+    gui = True  
+
+    # Configurez True si vous souhaitez afficher des exemples de questions pré-configurés, false sinon
+    exemple_questionsxml = True #Exemples tirées du jeu de données fourni: questions.xml
+    exemple_autres = False #Autres exemples pré-configurées
 
     #Paramètre interface graphique
     if(gui):
@@ -434,7 +438,7 @@ if __name__ == '__main__':
 
         #Create the box to enter message
         EntryBox = Text(base, bd=0, bg="white",width="29", height="5", font="Arial")
-        #EntryBox.bind("<Return>", send)
+        EntryBox.bind("<KeyRelease-Return>", (lambda event: send()))
 
 
         #Place all components on the screen
@@ -442,11 +446,6 @@ if __name__ == '__main__':
         ChatLog.place(x=10,y=12, height=772, width=1355)
         EntryBox.place(x=206, y=800, height=70, width=1000)
         SendButton.place(x=10, y=800, height=70)
-
-
-    # Configurez True si vous souhaitez afficher des exemples de questions pré-configurés, false sinon
-    exemple_questionsxml = True #Exemples tirées du jeu de données fourni: questions.xml
-    exemple_autres = False #Autres exemples pré-configurées
 
     if(exemple_questionsxml):
         question = "Quelle cours d'eau est traversé par le pont de Brooklyn ?"
