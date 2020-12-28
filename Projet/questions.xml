@@ -4,9 +4,7 @@
 <string lang="de">Welchen Fluss überspannt die Brooklyn Bridge?</string>
 <string lang="es">¿Por qué río cruza la Brooklyn Bridge?</string>
 <string lang="it">Quale fiume attraversa il ponte di Brooklyn?</string>
-<string lang="fr">
-Quelle cours d'eau est traversé par le pont de Brooklyn?
-</string>
+<string lang="fr">Quelle cours d'eau est traversé par le pont de Brooklyn?</string>
 <string lang="nl">Welke rivier overspant de Brooklyn Bridge?</string>
 <keywords lang="en">river, cross, Brooklyn Bridge</keywords>
 <keywords lang="de">Fluss, überspannen, Brooklyn Bridge</keywords>
@@ -15,7 +13,12 @@ Quelle cours d'eau est traversé par le pont de Brooklyn?
 <keywords lang="fr">cours d'eau, pont de Brooklyn</keywords>
 <keywords lang="nl">rivier, Brooklyn Bridge, overspant</keywords>
 <query>
-PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?uri WHERE { res:Brooklyn_Bridge dbo:crosses ?uri . }
+    PREFIX dbo: <http://dbpedia.org/ontology/>
+    PREFIX res: <http://dbpedia.org/resource/>
+    SELECT DISTINCT ?uri
+    WHERE {
+        res:Brooklyn_Bridge dbo:crosses ?uri .
+    }
 </query>
 <answers>
 <answer>

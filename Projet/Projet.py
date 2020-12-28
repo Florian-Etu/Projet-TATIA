@@ -156,6 +156,10 @@ def exp_reg(question):
     pattern = [{"LOWER": "qui"},{"POS": "AUX"}, {"ENT_TYPE": "PER"}] #QUI + AUXILIAIRE + UN NOM DE PERSONNE (éventuellement prénom + nom de famille) = ON RECHERCHE UNE PERSONNE
     matcher.add("person", None, pattern)
 
+    # Recherche du nombre d'employés d'une entreprise
+    pattern = [{"LOWER": {"REGEX": "employ[éeè]|employée|employés|employées|employees"}}, {"POS": "AUX", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"} , {"POS": "NOUN", "OP": "*"}]
+    matcher.add("employeesNumber", None, pattern)
+
     matches = matcher(question)
     # Traitement selon type de la question
     for match_id, start, end in matches:
@@ -207,6 +211,10 @@ def exp_reg(question):
                 if(auteur == "Aucun résultat correspondant à votre recherche.\n" ):
                     return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="MISC"][0][0], None), "creator")
             return auteur
+
+        elif(string_id == "employeesNumber"):
+            employeesNumber = requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="ORG"][0][0], None), "numberOfEmployees")
+            return employeesNumber
 
         elif(string_id=="appartenance"):
             recherche = [(ent.text, ent.label_) for ent in question.ents if ent.label_=="ORG"]
@@ -367,7 +375,7 @@ if __name__ == '__main__':
 
     # Configurez True si vous souhaitez afficher des exemples de questions pré-configurés, false sinon
     exemple_questionsxml = True #Exemples tirées du jeu de données fourni: questions.xml
-    exemple_autres = True #Autres exemples pré-configurées
+    exemple_autres = False #Autres exemples pré-configurées
 
     if(exemple_questionsxml):
         question = "Quelle cours d'eau est traversé par le pont de Brooklyn ?"
