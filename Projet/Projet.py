@@ -13,10 +13,6 @@ from collections import Counter
 from string import punctuation
 from deep_translator import GoogleTranslator
 
-spacy.prefer_gpu()
-nlp = spacy.load("fr_core_news_lg")
-
-
 def token(doc):
     # Tokeniser la phrase
     # Retourner le texte de chaque token
@@ -144,6 +140,10 @@ def exp_reg(question):
     pattern = [{"LOWER": {"REGEX": "cr[ée]ateure?s?|cr[ée]atrice|auteure?|autrice|[ée]crite?|invent[ée]e?|inventeure?|inventeuse|livres?|d[ée]velop?pée?|d[ée]velop?per|d[ée]veloppeur?s?e?s?|cr[ée]é?e?r?|produits?|jeux?|videos?|vid[ée]os?"}}, {"OP": "*"}, {"ENT_TYPE": "MISC"}]
     matcher.add("createur", None, pattern, pattern2)
 
+    #Recherche de concepteur / designer
+    pattern = [{"LOWER": {"REGEX": "con[çc]ue?s?|design[ée]e?s?|dessin[ée]e?r?s?|construit?e?s?|constructions?"}}, {"POS": "DET", "OP": "*"}, {"ENT_TYPE": "LOC"}]
+    matcher.add("concepteur", None, pattern)
+
     #Recherche d'acteurs
     pattern = [{"LOWER": {"REGEX": "acteure?s?|actrices?"}}, {"OP": "*"}, {"ENT_TYPE": "MISC"}]
     matcher.add("acteur", None, pattern)
@@ -225,6 +225,13 @@ def exp_reg(question):
 
         elif(string_id=="langue"):
             return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], "country"), "officialLanguage")
+        
+        elif(string_id=="concepteur"):
+            concepteur = requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], None), "designer", "dbp")
+            if(concepteur == "Aucun résultat correspondant à votre recherche.\n" ):
+                return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], None), "architect")
+            return concepteur
+
 
 
 def query(q, epr, f='application/json'):
@@ -347,6 +354,8 @@ def requete_dbpedia_multiple(requete, predicate, entity_of_type="dbo"):
     
 
 if __name__ == '__main__':
+    spacy.prefer_gpu()
+    nlp = spacy.load("fr_core_news_lg")
 
     #Configurez True si vous souhaitez afficher des exemples de questions pré-configurés, false sinon
     exemple_questionsxml = True #Exemples tirées du jeu de données fourni: questions.xml
