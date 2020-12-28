@@ -137,8 +137,12 @@ def exp_reg(question):
     matcher.add("awards", None, pattern)
 
     #Recherche d'un créateur / auteur / développeur
-    pattern = [{"LOWER": {"REGEX": "cr[ée]ateure?s?|cr[ée]atrice|auteure?|autrice|[ée]crite?|invent[ée]e?|inventeure?|inventeuse|livres?|films?|d[ée]velop?pée?|d[ée]velop?per|d[ée]veloppeur?s?e?s?|cr[ée]é?e?r?|produits?|jeux?|videos?|vid[ée]os?"}}, {"OP": "*"}, {"ENT_TYPE": "MISC"}]
+    pattern = [{"LOWER": {"REGEX": "cr[ée]ateure?s?|cr[ée]atrice|auteure?|autrice|[ée]crite?|invent[ée]e?|inventeure?|inventeuse|livres?|d[ée]velop?pée?|d[ée]velop?per|d[ée]veloppeur?s?e?s?|cr[ée]é?e?r?|produits?|jeux?|videos?|vid[ée]os?"}}, {"OP": "*"}, {"ENT_TYPE": "MISC"}]
     matcher.add("createur", None, pattern, pattern2)
+
+    #Recherche d'acteurs
+    pattern = [{"LOWER": {"REGEX": "acteure?s?|actrices?"}}, {"OP": "*"}, {"ENT_TYPE": "MISC"}]
+    matcher.add("acteur", None, pattern)
     
     #Recherche d'une personne
     pattern = [{"LOWER": "qui"},{"POS": "AUX"}, {"ENT_TYPE": "PER"}] #QUI + AUXILIAIRE + UN NOM DE PERSONNE (éventuellement prénom + nom de famille) = ON RECHERCHE UNE PERSONNE
@@ -193,15 +197,20 @@ def exp_reg(question):
             if(len(recherche)<1):
                 recherche = [(ent.text, ent.label_) for ent in question.ents if ent.label_=="MISC"]
             recherche=lookup_keyword(recherche[0][0], None)
-            fondateur = requete_dbpedia_multiple(recherche, "founders", "dbp")
+            fondateur = requete_dbpedia_multiple(recherche, "owner")
             if(fondateur == "Aucun résultat correspondant à votre recherche.\n" ):
-                fondateur = requete_dbpedia_multiple(recherche, "keyPerson")
-                if(fondateur == "Aucun résultat correspondant à votre recherche.\n" ):        
-                    return requete_dbpedia_multiple(recherche, "keyPeople", "dbp")
+                fondateur = requete_dbpedia_multiple(recherche, "founders", "dbp")
+                if(fondateur == "Aucun résultat correspondant à votre recherche.\n" ):
+                    fondateur = requete_dbpedia_multiple(recherche, "keyPerson")
+                    if(fondateur == "Aucun résultat correspondant à votre recherche.\n" ):        
+                        return requete_dbpedia_multiple(recherche, "keyPeople", "dbp")
             return fondateur
 
         elif(string_id=="awards"):
             return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="ORG"][0][0], "work"), string_id, "dbp")
+
+        elif(string_id=="acteur"):
+            return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="MISC"][0][0], None), "starring")
 
 
 def query(q, epr, f='application/json'):
@@ -419,10 +428,16 @@ if __name__ == '__main__':
     entree = "Qui était l'épouse du président américain Lincoln ?"
     print(reponse(entree))
 
+    entree = "A qui appartient Universal Studios ?"
+    print(reponse(entree))
+
     entree = "Qui possède Aldi ?"
     print(reponse(entree))
 
     entree = "Quels prix ont été gagnés par Wikileaks ?"
+    print(reponse(entree))
+
+    entree = "Qui sont les acteurs dans le film Last Action Hero ?"
     print(reponse(entree))
 
     entree = "En quel langage de programmation a été écrit GIMP ?"
