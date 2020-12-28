@@ -373,7 +373,7 @@ import tkinter
 from tkinter import *
 
 
-def send(gui, msg=""):
+def send(msg=""):
     if not msg:
         msg = EntryBox.get("1.0",'end-1c').strip()
     EntryBox.delete("0.0",END)
@@ -382,8 +382,8 @@ def send(gui, msg=""):
         ChatLog.config(state=NORMAL)
         ChatLog.insert(END, "Vous: " + msg + '\n')
         
-        gui.update_idletasks()
-        gui.update()
+        base.update_idletasks()
+        base.update()
 
         ChatLog.config(foreground="#442265", font=("Verdana", 12 ))
 
@@ -393,11 +393,11 @@ def send(gui, msg=""):
         ChatLog.config(state=DISABLED)
         ChatLog.yview(END)
 
-def affichage_reponse(question, gui):
+def affichage_reponse(question, gui=True):
         if gui:
-            send(gui, question)
-            gui.update_idletasks()
-            gui.update()
+            send(question)
+            base.update_idletasks()
+            base.update()
         else:
             print(question)
             print(reponse(question))
@@ -442,7 +442,6 @@ if __name__ == '__main__':
         ChatLog.place(x=10,y=12, height=772, width=1355)
         EntryBox.place(x=206, y=800, height=70, width=1000)
         SendButton.place(x=10, y=800, height=70)
-        gui = base
 
 
     # Configurez True si vous souhaitez afficher des exemples de questions pré-configurés, false sinon
