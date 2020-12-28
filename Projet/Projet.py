@@ -102,12 +102,12 @@ def exp_reg(question):
     matcher = Matcher(nlp.vocab)
 
     # Recherche d'une date
-    pattern = [{"LOWER":{"REGEX": "année|mois|jour|date"}}] #Si la question contient année ou mois ou jour ou date = date
+    pattern = [{"LOWER":{"REGEX": "années?|mois|jours?|dates?"}}] #Si la question contient année ou mois ou jour ou date = date
     pattern2 = [{"LOWER":"quand"}, {"POS": "AUX", "OP": "*"}] #Quand + auxiliaire optionnel = date
     matcher.add("Date", None, pattern, pattern2) 
 
     # Recherche d'un site web
-    pattern = [{"LOWER":{"REGEX": "web|adresse|site|accueil|page"}}, {"POS": "ADP", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"}, {"ENT_TYPE": "ORG"}]
+    pattern = [{"LOWER":{"REGEX": "web|add?resse|site|accueil|page"}}, {"POS": "ADP", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"}, {"ENT_TYPE": "ORG"}]
     matcher.add("website", None, pattern) 
 
     # Recherche leader d'une ville
@@ -115,11 +115,11 @@ def exp_reg(question):
     matcher.add("mayor", None, pattern)
 
     # Recherche leader d'un pays
-    pattern = [{"LOWER":{"REGEX": "président|president|maire|chef|dirigeant|roi|renne|chancelier|chanceliere|ministre"}}, {"POS": "ADP", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"}, {"ENT_TYPE": "LOC"}]  # "maire de...", "président de la..."
+    pattern = [{"LOWER":{"REGEX": "pr[ée]sidents?|maires?|chefs?|dirigeant|roi|renne|chancelier|chanceli[eè]re|ministre"}}, {"POS": "ADP", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"}, {"ENT_TYPE": "LOC"}]  # "maire de...", "président de la..."
     matcher.add("Leader_pays", None, pattern)
 
     # Recherche voisins
-    pattern = [{"LOWER":{"REGEX": "voisin|frontière|frontiere|autour|voisins"}}, {"POS": "ADP", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"},{"ENT_TYPE": "LOC"}] 
+    pattern = [{"LOWER":{"REGEX": "voisins?|fronti[èeé]res?|autours?"}}, {"POS": "ADP", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"},{"ENT_TYPE": "LOC"}] 
     matcher.add("voisin", None, pattern)
 
     # Recherche dans quel pays se trouve une ville ou un lieu
@@ -128,12 +128,16 @@ def exp_reg(question):
     matcher.add("pays", None, pattern, pattern2)
 
     #Recherche d'une appartenance / possession
-    pattern = [{"LOWER": {"REGEX": "possède|possede|possèdent|possedent|appartient|appartiennent|appartenance|possession"}}, {"OP": "*"}, {"ENT_TYPE": "MISC"}]
-    pattern2 = [{"LOWER": {"REGEX": "possède|possede|possèdent|possedent|appartient|appartiennent|appartenance|possession"}}, {"OP": "*"}, {"ENT_TYPE": "ORG"}]
+    pattern = [{"LOWER": {"REGEX": "poss[èe]den?t?|app?artienn?e?n?t|app?artenance|possess?ions?"}}, {"OP": "*"}, {"ENT_TYPE": "MISC"}]
+    pattern2 = [{"LOWER": {"REGEX": "poss[èe]den?t?|app?artienn?e?n?t|app?artenance|possess?ions?"}}, {"OP": "*"}, {"ENT_TYPE": "ORG"}]
     matcher.add("appartenance", None, pattern, pattern2)
 
+    #Recherche gagnant de prix
+    pattern = [{"LOWER": {"REGEX": "gagn[ée]e?s?r?"}}, {"OP": "*"}, {"ENT_TYPE": "ORG"}]
+    matcher.add("awards", None, pattern)
+
     #Recherche d'un créateur / auteur / développeur
-    pattern = [{"LOWER": {"REGEX": "createur|créateur|créateure|createure|créatrice|creatrice|auteur|auteure|autrice|écrit|inventé|inventeur|inventeuse|inventeure|livre|film|développé|développée|développer|developpe|developper|développeurs|développeur|developpeur|développeuse|developpeuse|développeuses|créer|crée| créée|cree|creer|produit|jeu|video|jeux|videos"}}, {"OP": "*"}, {"ENT_TYPE": "MISC"}]
+    pattern = [{"LOWER": {"REGEX": "cr[ée]ateure?s?|cr[ée]atrice|auteure?|autrice|[ée]crite?|invent[ée]e?|inventeure?|inventeuse|livres?|films?|d[ée]velop?pée?|d[ée]velop?per|d[ée]veloppeur?s?e?s?|cr[ée]é?e?r?|produits?|jeux?|videos?|vid[ée]os?"}}, {"OP": "*"}, {"ENT_TYPE": "MISC"}]
     matcher.add("createur", None, pattern, pattern2)
     
     #Recherche d'une personne
@@ -195,6 +199,9 @@ def exp_reg(question):
                 if(fondateur == "Aucun résultat correspondant à votre recherche.\n" ):        
                     return requete_dbpedia_multiple(recherche, "keyPeople", "dbp")
             return fondateur
+
+        elif(string_id=="awards"):
+            return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="ORG"][0][0], "work"), string_id, "dbp")
 
 
 def query(q, epr, f='application/json'):
@@ -304,7 +311,7 @@ def requete_dbpedia_multiple(requete, predicate, entity_of_type="dbo"):
 
     for resultats_requete in json_query["results"]["bindings"]:
         if(not resultats_requete[predicate]["value"].startswith("http://dbpedia.org")):
-            result+=resultats_requete[predicate]["value"]
+            result+=resultats_requete[predicate]["value"] + " et "
             continue
 
         json_result = json.loads(query("""SELECT ?label WHERE {<""" + resultats_requete[predicate]["value"] + """> rdfs:label ?label. FILTER langMatches(lang(?label),"fr")}""", "http://dbpedia.org/sparql"))
@@ -413,6 +420,9 @@ if __name__ == '__main__':
     print(reponse(entree))
 
     entree = "Qui possède Aldi ?"
+    print(reponse(entree))
+
+    entree = "Quels prix ont été gagnés par Wikileaks ?"
     print(reponse(entree))
 
     entree = "En quel langage de programmation a été écrit GIMP ?"
