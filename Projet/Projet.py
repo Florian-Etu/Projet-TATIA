@@ -1,5 +1,5 @@
 # https://www.stat4decision.com/fr/traitement-langage-naturel-francais-tal-nlp/
-# Ligne de commande: "pip install spacy" + "python -m spacy download fr_core_news_lg" + "pip install bs4" + "pip install lxml" + "pip install deep-translator"
+# Ligne de commande: "pip install spacy" + "python -m spacy download fr_core_news_lg" + "pip install bs4" + "pip install lxml" + "pip install deep-translator" + "pip install tkinter"
 # Lancer ce programme pour vérifier la bonne installation
 
 import spacy
@@ -51,7 +51,6 @@ def get_hotwords(text):
 
 
 def reponse(question):
-    print(question)
     question = question.replace("l'", "l' ")
     hotwords = get_hotwords(question)
     alliance = ["epoux", "époux", "epouse", "épouse", "mari", "femme", "mariée", "marié", "marier", "mariage", "partnaire", "relation", "union"]
@@ -367,11 +366,84 @@ def requete_dbpedia_multiple(requete, predicate, entity_of_type="dbo"):
             result += resultats_requete[predicate]["value"].replace("http://dbpedia.org/resource/", "").replace("_", " ") + " et "
 
     return result[:-3]+'\n'
+
+#Interface graphique
+#Creating GUI with tkinter
+import tkinter
+from tkinter import *
+
+
+def send(gui, msg=""):
+    if not msg:
+        msg = EntryBox.get("1.0",'end-1c').strip()
+    EntryBox.delete("0.0",END)
+
+    if msg != '':
+        ChatLog.config(state=NORMAL)
+        ChatLog.insert(END, "Vous: " + msg + '\n')
+        
+        gui.update_idletasks()
+        gui.update()
+
+        ChatLog.config(foreground="#442265", font=("Verdana", 12 ))
+
+        res = str(reponse(msg))
+        ChatLog.insert(END, "Bot: " + res + '\n\n')
+
+        ChatLog.config(state=DISABLED)
+        ChatLog.yview(END)
+
+def affichage_reponse(question, gui):
+        if gui:
+            send(gui, question)
+            gui.update_idletasks()
+            gui.update()
+        else:
+            print(question)
+            print(reponse(question))
+
     
 
 if __name__ == '__main__':
     spacy.prefer_gpu()
     nlp = spacy.load("fr_core_news_lg")
+
+    #Configurez True si vous souhaitez activer l'interface graphique (false sinon)
+    gui = True
+
+    #Paramètre interface graphique
+    if(gui):
+        base = Tk()
+        base.title("Système de questions-réponses en français")
+        base.geometry("1400x900")
+        base.resizable(width=FALSE, height=FALSE)
+
+        #Create Chat window
+        ChatLog = Text(base, bd=0, bg="white", height="8", width="50", font="Calibri")
+
+        ChatLog.config(state=DISABLED)
+
+        #Bind scrollbar to Chat window
+        scrollbar = Scrollbar(base, command=ChatLog.yview, cursor="heart")
+        ChatLog['yscrollcommand'] = scrollbar.set
+
+        #Create Button to send message
+        SendButton = Button(base, font=("Verdana",12,'bold'), text="Send", width="12", height=5,
+                            bd=0, bg="#32de97", activebackground="#3c9d9b",fg='#ffffff',
+                            command= send )
+
+        #Create the box to enter message
+        EntryBox = Text(base, bd=0, bg="white",width="29", height="5", font="Arial")
+        #EntryBox.bind("<Return>", send)
+
+
+        #Place all components on the screen
+        scrollbar.place(x=1370,y=12, height=772)
+        ChatLog.place(x=10,y=12, height=772, width=1355)
+        EntryBox.place(x=206, y=800, height=70, width=1000)
+        SendButton.place(x=10, y=800, height=70)
+        gui = base
+
 
     # Configurez True si vous souhaitez afficher des exemples de questions pré-configurés, false sinon
     exemple_questionsxml = True #Exemples tirées du jeu de données fourni: questions.xml
@@ -379,85 +451,85 @@ if __name__ == '__main__':
 
     if(exemple_questionsxml):
         question = "Quelle cours d'eau est traversé par le pont de Brooklyn ?"
-        print(reponse(question))
+        affichage_reponse(question, gui)
 
         question = "Qui est le créateur de Wikipedia ?"
-        print(reponse(question))
+        affichage_reponse(question, gui)
 
         question = "Dans quel pays commence le Nil ?"
-        print(reponse(question))
+        affichage_reponse(question, gui)
 
         question = "Dans quel pays se trouve le Nil ?"
-        print(reponse(question))
+        affichage_reponse(question, gui)
 
         question = "Quel est l'endroit le plus haut du Karakoram ?"
-        print(reponse(question))
+        affichage_reponse(question, gui)
 
         question = "Qui a conçu le pont de Brooklyn ?"
-        print(reponse(question))
+        affichage_reponse(question, gui)
 
         question = "Qui est le créateur de Goofy ?"
-        print(reponse(question))
+        affichage_reponse(question, gui)
 
         question = "Qui est le maire de New York City ?"
-        print(reponse(question))
+        affichage_reponse(question, gui)
 
         question = "Quels sont les pays traversés par l'Ienisseï ?"
-        print(reponse(question))
+        affichage_reponse(question, gui)
 
         question = "Dans quel musée est exposé Le Cri de Munch ?"
-        print(reponse(question))
+        affichage_reponse(question, gui)
 
         question = "Quels sont les états voisins de l'Illinois ?"
-        print(reponse(question))
+        affichage_reponse(question, gui)
 
         question = "Qui était l'épouse du président américain Lincoln ?"
-        print(reponse(question))
+        affichage_reponse(question, gui)
 
         question = "En quel langage de programmation a été écrit GIMP ?"
-        print(reponse(question))
+        affichage_reponse(question, gui)
 
         question = "Dans quel pays se trouve le lac Limerick ?"
-        print(reponse(question))
+        affichage_reponse(question, gui)
 
         question = "Quel est la devise de la Tchéquie ?"
-        print(reponse(question))
+        affichage_reponse(question, gui)
 
         question = "Qui a développé World of Warcraft ?"
-        print(reponse(question))
+        affichage_reponse(question, gui)
 
         question = "Qui possède Aldi ?"
-        print(reponse(question))
+        affichage_reponse(question, gui)
 
         question = "Combien d'employés a IBM ?"
-        print(reponse(question))
+        affichage_reponse(question, gui)
 
         question = "Quel est l'indicatif téléphonique de Berlin ?"
-        print(reponse(question))
+        affichage_reponse(question, gui)
 
         question = "Quand se déroula la bataille de Gettysburg ?"
-        print(reponse(question))
+        affichage_reponse(question, gui)
 
         question = "Quels sont les langues officielles des Philippines ?"
-        print(reponse(question))
+        affichage_reponse(question, gui)
 
         question = "Qui a écrit le livre Les Piliers de la terre ?"
-        print(reponse(question))
+        affichage_reponse(question, gui)
 
         question = "Quel est la site web de Forbes ?"
-        print(reponse(question))
+        affichage_reponse(question, gui)
 
         question = "Quels prix ont été gagnés par Wikileaks ?"
-        print(reponse(question))
+        affichage_reponse(question, gui)
 
         question = "Donne-moi tous les acteurs jouant dans le film Last Action Hero."
-        print(reponse(question))
+        affichage_reponse(question, gui)
 
         question = "A qui appartient Universal Studios ?"
-        print(reponse(question))
+        affichage_reponse(question, gui)
 
         question = "Quel est la cause de décès de Bruce Carver ?"
-        print(reponse(question))
+        affichage_reponse(question, gui)
 
     if(exemple_autres):
         question = "Qui est Emmanuel Macron ?"
@@ -526,5 +598,7 @@ if __name__ == '__main__':
         question = "Qui a produit le jeu Mario 64 ?"
         print(reponse(question))
 
+    
+    base.mainloop()    
     #question = input()
     #print(reponse(question))
