@@ -58,20 +58,12 @@ def reponse(question):
     print(question)
     question = question.replace("l'", "l' ")
     hotwords = get_hotwords(question)
-    createur = ["createur", "créateur", "créateure", "createure", "créatrice", "creatrice", "auteur", "auteure", "autrice", "écrit", "inventé", "inventeur", "inventeuse", "inventeure", "livre", "film"]
     alliance = ["epoux", "époux", "epouse", "épouse", "mari", "femme", "mariée", "marié", "marier", "mariage", "partnaire", "relation", "union"]
     prog = ["language", "langage", "programmation", "languages", "langages", "programmations", "programation", "program"]
     capital = ["capitale", "capital"]
     monnaie = ["devise", "devises", "monnaie", "monnaies"]
 
     if(len(hotwords)>=2):
-
-        #Recherche d'auteur / créateur
-        if(any(item in hotwords for item in createur)):
-            auteur = requete_dbpedia_multiple(lookup_keyword(hotwords[-1], None), "author")
-            if(auteur == "Aucun résultat correspondant à votre recherche.\n" ):
-                return requete_dbpedia_multiple(lookup_keyword(hotwords[-1], None), "creator")
-            return auteur
 
         # Recherche de la capital d'un pays
         if (any(item in hotwords for item in capital) or ("grande" in hotwords and "ville" in hotwords)):
@@ -135,9 +127,14 @@ def exp_reg(question):
     pattern2 = [{"LOWER": {"REGEX": "dans"}}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"POS": "PRON", "OP": "*"}, {"POS": "VERB","OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"POS": "ADP", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"}, {"ENT_TYPE": "LOC"}]  # "Dans quel pays se trouve la ville de nomVille? "
     matcher.add("pays", None, pattern, pattern2)
 
-    #Recherche développeur
-    pattern = [{"LOWER": {"REGEX": "développé|développée|développer|developpe|developper|développeurs|développeur|developpeur|créer|crée| créée|cree|creer|produit"}}, {"OP": "*"}, {"ENT_TYPE": "MISC"}]
-    matcher.add("developer", None, pattern)
+    #Recherche d'une appartenance / possession
+    pattern = [{"LOWER": {"REGEX": "possède|possede|possèdent|possedent|appartient|appartiennent|appartenance|possession"}}, {"OP": "*"}, {"ENT_TYPE": "MISC"}]
+    pattern2 = [{"LOWER": {"REGEX": "possède|possede|possèdent|possedent|appartient|appartiennent|appartenance|possession"}}, {"OP": "*"}, {"ENT_TYPE": "ORG"}]
+    matcher.add("appartenance", None, pattern, pattern2)
+
+    #Recherche d'un créateur / auteur / développeur
+    pattern = [{"LOWER": {"REGEX": "createur|créateur|créateure|createure|créatrice|creatrice|auteur|auteure|autrice|écrit|inventé|inventeur|inventeuse|inventeure|livre|film|développé|développée|développer|developpe|developper|développeurs|développeur|developpeur|développeuse|developpeuse|développeuses|créer|crée| créée|cree|creer|produit|jeu|video|jeux|videos"}}, {"OP": "*"}, {"ENT_TYPE": "MISC"}]
+    matcher.add("createur", None, pattern, pattern2)
     
     #Recherche d'une personne
     pattern = [{"LOWER": "qui"},{"POS": "AUX"}, {"ENT_TYPE": "PER"}] #QUI + AUXILIAIRE + UN NOM DE PERSONNE (éventuellement prénom + nom de famille) = ON RECHERCHE UNE PERSONNE
@@ -179,8 +176,25 @@ def exp_reg(question):
         elif(string_id=="voisin"):
             return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], None), "borderingstates", "dbp")
         
-        elif(string_id=="developer"):
-            return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="MISC"][0][0], "videogame"), string_id)
+        elif(string_id=="createur"):
+            auteur = requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="MISC"][0][0], None), "developer")
+            if(auteur == "Aucun résultat correspondant à votre recherche.\n" ):
+                auteur = requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="MISC"][0][0], None), "author")
+                if(auteur == "Aucun résultat correspondant à votre recherche.\n" ):
+                    return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="MISC"][0][0], None), "creator")
+            return auteur
+
+        elif(string_id=="appartenance"):
+            recherche = [(ent.text, ent.label_) for ent in question.ents if ent.label_=="ORG"]
+            if(len(recherche)<1):
+                recherche = [(ent.text, ent.label_) for ent in question.ents if ent.label_=="MISC"]
+            recherche=lookup_keyword(recherche[0][0], None)
+            fondateur = requete_dbpedia_multiple(recherche, "founders", "dbp")
+            if(fondateur == "Aucun résultat correspondant à votre recherche.\n" ):
+                fondateur = requete_dbpedia_multiple(recherche, "keyPerson")
+                if(fondateur == "Aucun résultat correspondant à votre recherche.\n" ):        
+                    return requete_dbpedia_multiple(recherche, "keyPeople", "dbp")
+            return fondateur
 
 
 def query(q, epr, f='application/json'):
@@ -271,7 +285,7 @@ def requete_dbpedia(requete, predicate, entity_of_type="dbo"):
     if(not json_query["results"]["bindings"]):
         return "Aucun résultat correspondant à votre recherche.\n"
 
-    if(predicate=="wikiPageExternalLink"):
+    if(not json_query["results"]["bindings"][0][predicate]["value"].startswith("http://dbpedia.org")):
         return json_query["results"]["bindings"][0][predicate]["value"] + '\n'
 
     json_result=json.loads(query("""SELECT ?label WHERE {<""" + json_query["results"]["bindings"][0][predicate]["value"] + """> rdfs:label ?label. FILTER langMatches(lang(?label),"fr")}""", "http://dbpedia.org/sparql"))
@@ -289,6 +303,10 @@ def requete_dbpedia_multiple(requete, predicate, entity_of_type="dbo"):
         return "Aucun résultat correspondant à votre recherche.\n"
 
     for resultats_requete in json_query["results"]["bindings"]:
+        if(not resultats_requete[predicate]["value"].startswith("http://dbpedia.org")):
+            result+=resultats_requete[predicate]["value"]
+            continue
+
         json_result = json.loads(query("""SELECT ?label WHERE {<""" + resultats_requete[predicate]["value"] + """> rdfs:label ?label. FILTER langMatches(lang(?label),"fr")}""", "http://dbpedia.org/sparql"))
         if(json_result["results"]["bindings"]):
             result += json_result["results"]["bindings"][0]["label"]["value"]+ " et "
@@ -302,7 +320,7 @@ if __name__ == '__main__':
     #entree = input()
 
     entree = "Quel est le site web de Forbes ?"
-    print(reponse(entree))
+    print(reponse(entree)) 
     
     entree = "Qui est le créateur de Wikipedia ?"
     print(reponse(entree))
@@ -379,6 +397,9 @@ if __name__ == '__main__':
     entree = "Qui a écrit le livre Frankenstein ?"
     print(reponse(entree))
 
+    entree = "Qui a écrit le livre Les Piliers de la terre ?"
+    print(reponse(entree))
+
     entree = "Qui est le créateur de Goofy ?"
     print(reponse(entree))
 
@@ -389,6 +410,9 @@ if __name__ == '__main__':
     print(reponse(entree))
 
     entree = "Qui était l'épouse du président américain Lincoln ?"
+    print(reponse(entree))
+
+    entree = "Qui possède Aldi ?"
     print(reponse(entree))
 
     entree = "En quel langage de programmation a été écrit GIMP ?"
