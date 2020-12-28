@@ -130,10 +130,10 @@ def exp_reg(question):
     pattern = [{"LOWER":{"REGEX": "voisin|frontière|frontiere|autour|voisins"}}, {"POS": "ADP", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"},{"ENT_TYPE": "LOC"}] 
     matcher.add("voisin", None, pattern)
 
-    # Recherche dans quel pays se trouve une ville
+    # Recherche dans quel pays se trouve une ville ou un lieu
     pattern = [{"LOWER": {"REGEX": "où"}}, {"POS": "AUX", "OP": "*"}, {"POS": "PRON", "OP": "*"}, {"POS": "VERB","OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"POS": "ADP", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"}, {"ENT_TYPE": "LOC"}]  # Où est ce que se trouve la ville de nomVille ? et "Où est nomVille ?"
     pattern2 = [{"LOWER": {"REGEX": "dans"}}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"POS": "PRON", "OP": "*"}, {"POS": "VERB","OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"POS": "ADP", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"}, {"ENT_TYPE": "LOC"}]  # "Dans quel pays se trouve la ville de nomVille? "
-    matcher.add("ville", None, pattern, pattern2)
+    matcher.add("pays", None, pattern, pattern2)
 
     #Recherche développeur
     pattern = [{"LOWER": {"REGEX": "développé|développée|développer|developpe|developper|développeurs|développeur|developpeur|créer|crée| créée|cree|creer|produit"}}, {"OP": "*"}, {"ENT_TYPE": "MISC"}]
@@ -142,10 +142,6 @@ def exp_reg(question):
     #Recherche d'une personne
     pattern = [{"LOWER": "qui"},{"POS": "AUX"}, {"ENT_TYPE": "PER"}] #QUI + AUXILIAIRE + UN NOM DE PERSONNE (éventuellement prénom + nom de famille) = ON RECHERCHE UNE PERSONNE
     matcher.add("person", None, pattern)
-    
-    #Recherche d'un lieu
-    pattern = [{"LOWER": "où"}]
-    matcher.add("Lieu", None, pattern)
 
     matches = matcher(question)
     # Traitement selon type de la question
@@ -175,7 +171,9 @@ def exp_reg(question):
         elif(string_id=="website"):
             return requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="ORG"][0][0], None), "wikiPageExternalLink")
 
-        elif(string_id == "ville"):
+        elif(string_id == "pays"):
+            if("lac" in question.text):
+                return requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_ == "LOC"][0][0], "lake"), "country")
             return requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_ == "LOC"][0][0], None), "country")
 
         elif(string_id=="voisin"):
@@ -352,6 +350,9 @@ if __name__ == '__main__':
     print(reponse(entree))
 
     entree = "Dans quel pays se trouve la ville de Grenoble ? "
+    print(reponse(entree))
+
+    entree = "Dans quel pays se trouve le lac Limerick ?"
     print(reponse(entree))
 
     entree = "Où est Le Caire ? "
