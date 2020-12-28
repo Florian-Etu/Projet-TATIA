@@ -143,6 +143,10 @@ def exp_reg(question):
     #Recherche d'acteurs
     pattern = [{"LOWER": {"REGEX": "acteure?s?|actrices?"}}, {"OP": "*"}, {"ENT_TYPE": "MISC"}]
     matcher.add("acteur", None, pattern)
+
+    #Recherche cause de décès
+    pattern = [{"LOWER": {"REGEX": "d[ée]c[èée]s?|d[ée]c[ée]d[eé]e?r?|morte?s?|mourire?"}}, {"OP": "*"}, {"ENT_TYPE": "PER"}]
+    matcher.add("deces", None, pattern)
     
     #Recherche d'une personne
     pattern = [{"LOWER": "qui"},{"POS": "AUX"}, {"ENT_TYPE": "PER"}] #QUI + AUXILIAIRE + UN NOM DE PERSONNE (éventuellement prénom + nom de famille) = ON RECHERCHE UNE PERSONNE
@@ -211,6 +215,9 @@ def exp_reg(question):
 
         elif(string_id=="acteur"):
             return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="MISC"][0][0], None), "starring")
+
+        elif(string_id=="deces"):
+            return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="PER"][0][0], "person"), "deathCause")
 
 
 def query(q, epr, f='application/json'):
@@ -438,6 +445,9 @@ if __name__ == '__main__':
     print(reponse(entree))
 
     entree = "Qui sont les acteurs dans le film Last Action Hero ?"
+    print(reponse(entree))
+
+    entree = "Quel est la cause de décès de Bruce Carver ?"
     print(reponse(entree))
 
     entree = "En quel langage de programmation a été écrit GIMP ?"
