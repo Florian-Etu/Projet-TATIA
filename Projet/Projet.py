@@ -127,6 +127,10 @@ def exp_reg(question):
     pattern2 = [{"LOWER": {"REGEX": "dans"}}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"POS": "PRON", "OP": "*"}, {"POS": "VERB","OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"POS": "ADP", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"}, {"ENT_TYPE": "LOC"}]  # "Dans quel pays se trouve la ville de nomVille? "
     matcher.add("pays", None, pattern, pattern2)
 
+    #Recherche langues pays
+    pattern = [{"LOWER": {"REGEX": "langues?|parl[ée]r?e?s?"}}, {"OP": "*"}, {"ENT_TYPE": "LOC"}]
+    matcher.add("langue", None, pattern)
+
     #Recherche d'une appartenance / possession
     pattern = [{"LOWER": {"REGEX": "poss[èe]den?t?|app?artienn?e?n?t|app?artenance|possess?ions?"}}, {"OP": "*"}, {"ENT_TYPE": "MISC"}]
     pattern2 = [{"LOWER": {"REGEX": "poss[èe]den?t?|app?artienn?e?n?t|app?artenance|possess?ions?"}}, {"OP": "*"}, {"ENT_TYPE": "ORG"}]
@@ -218,6 +222,9 @@ def exp_reg(question):
 
         elif(string_id=="deces"):
             return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="PER"][0][0], "person"), "deathCause")
+
+        elif(string_id=="langue"):
+            return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], "country"), "officialLanguage")
 
 
 def query(q, epr, f='application/json'):
