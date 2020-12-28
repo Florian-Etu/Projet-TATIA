@@ -585,7 +585,7 @@ WHERE {
 <string lang="de"><![CDATA[Gib mir alle Schauspieler, die in Last Action Hero mitgespielt haben.]]></string>
 <string lang="es"><![CDATA[Dame todos los actores que hayan actuado en Last Action Hero.]]></string>
 <string lang="it"><![CDATA[Dammi tutti gli attori che hanno recitato in Last Action Hero.]]></string>
-<string lang="fr"><![CDATA[Qui sont les acteurs jouant dans le film Last Action Hero ?]]></string>
+<string lang="fr"><![CDATA[Donne-moi tous les acteurs jouant dans le film Last Action Hero.]]></string>
 <string lang="nl"><![CDATA[Noem alle acteurs uit de film Last Action Hero.]]></string>
 <keywords lang="en"><![CDATA[actor, starring, Last Action Hero]]></keywords>
 <keywords lang="de"><![CDATA[Schauspieler, mitspielen, Last Action Hero]]></keywords>

@@ -340,128 +340,156 @@ def requete_dbpedia_multiple(requete, predicate, entity_of_type="dbo"):
     
 
 if __name__ == '__main__':
-    #entree = input()
 
-    entree = "Quel est le site web de Forbes ?"
-    print(reponse(entree)) 
+    #Configurez True si vous souhaitez afficher des exemples de questions pré-configurés, false sinon
+    exemple_questionsxml = True #Exemples tirées du jeu de données fourni: questions.xml
+    exemple_autres = True #Autres exemples pré-configurées
+
+    if(exemple_questionsxml):
+        question = "Quelle cours d'eau est traversé par le pont de Brooklyn ?"
+        print(reponse(question))
+
+        question = "Qui est le créateur de Wikipedia ?"
+        print(reponse(question))
+
+        question = "Dans quel pays commence le Nil ?"
+        print(reponse(question))
+
+        question = "Quel est l'endroit le plus haut du Karakoram ?"
+        print(reponse(question))
+
+        question = "Qui a conçu le pont de Brooklyn ?"
+        print(reponse(question))
+
+        question = "Qui est le créateur de Goofy ?"
+        print(reponse(question))
+
+        question = "Qui est le maire de New York City ?"
+        print(reponse(question))
+
+        question = "Quels sont les pays traversés par l'Ienisseï ?"
+        print(reponse(question))
+
+        question = "Dans quel musée est exposé Le Cri de Munch ?"
+        print(reponse(question))
+
+        question = "Quels sont les états voisins de l'Illinois ?"
+        print(reponse(question))
+
+        question = "Qui était l'épouse du président américain Lincoln ?"
+        print(reponse(question))
+
+        question = "En quel langage de programmation a été écrit GIMP ?"
+        print(reponse(question))
+
+        question = "Dans quel pays se trouve le lac Limerick ?"
+        print(reponse(question))
+
+        question = "Quel est la devise de la Tchéquie ?"
+        print(reponse(question))
+
+        question = "Qui a développé World of Warcraft ?"
+        print(reponse(question))
+
+        question = "Qui possède Aldi ?"
+        print(reponse(question))
+
+        question = "Combien d'employés a IBM ?"
+        print(reponse(question))
+
+        question = "Quel est l'indicatif téléphonique de Berlin ?"
+        print(reponse(question))
+
+        question = "Quand se déroula la bataille de Gettysburg ?"
+        print(reponse(question))
+
+        question = "Quels sont les langues officielles des Philippines ?"
+        print(reponse(question))
+
+        question = "Qui a écrit le livre Les Piliers de la terre ?"
+        print(reponse(question))
+
+        question = "Quel est la site web de Forbes ?"
+        print(reponse(question))
+
+        question = "Quels prix ont été gagnés par Wikileaks ?"
+        print(reponse(question))
+
+        question = "Donne-moi tous les acteurs jouant dans le film Last Action Hero."
+        print(reponse(question))
+
+        question = "A qui appartient Universal Studios ?"
+        print(reponse(question))
+
+        question = "Quel est la cause de décès de Bruce Carver ?"
+        print(reponse(question))
+
+    if(exemple_autres):
+        question = "Qui est Emmanuel Macron ?"
+        print(reponse(question))
+
+        question = "Qui est Nicolas Sarkozy ?"
+        print(reponse(question))
+
+        question = "Qui est Zinedine ?"
+        print(reponse(question))
     
-    entree = "Qui est le créateur de Wikipedia ?"
-    print(reponse(entree))
+        question = "Qui est le maire de Paris ?"
+        print(reponse(question))
 
-    entree = "Qui est Emmanuel Macron ?"
-    print(reponse(entree))
+        question = "Qui est le maire de Budapest ?"
+        print(reponse(question))
 
-    entree = "Qui est Nicolas Sarkozy ?"
-    print(reponse(entree))
+        question = "Qui est le maire de Lyon ?"
+        print(reponse(question))
 
-    entree = "Qui est Zinedine ?"
-    print(reponse(entree))
+        question = "Qui est le maire de Marseille ?"
+        print(reponse(question))
+
+        question = "Qui est le maire de Nice ?"
+        print(reponse(question))
+
+        question = "Qui est le président des USA ?"
+        print(reponse(question))
+
+        question = "Qui est le président de la France ?"
+        print(reponse(question))
+
+        question = "Qui est la chanceliere de l'Allemagne ?"
+        print(reponse(question))
+
+        question = "Où est ce que se trouve la ville de Paris ? "
+        print(reponse(question))
+
+        question = "Où est ce que se trouve la ville de Tokyo ? "
+        print(reponse(question))
+
+        question = "Dans quel pays se trouve la ville de Grenoble ? "
+        print(reponse(question))
+
+        question = "Dans quel pays se trouve le lac Limerick ?"
+        print(reponse(question))
+
+        question = "Où est Le Caire ? "
+        print(reponse(question))
     
-    entree = "Qui est le maire de Paris ?"
-    print(reponse(entree))
-
-    entree = "Qui est le maire de New York ?"
-    print(reponse(entree))
-
-    entree = "Qui est le maire de Budapest ?"
-    print(reponse(entree))
-
-    entree = "Qui est le maire de Lyon ?"
-    print(reponse(entree))
-
-    entree = "Qui est le maire de Marseille ?"
-    print(reponse(entree))
-
-    entree = "Qui est le maire de Nice ?"
-    print(reponse(entree))
-
-    entree = "Qui est le président des USA ?"
-    print(reponse(entree))
-
-    entree = "Qui est le président de la France ?"
-    print(reponse(entree))
-
-    entree = "Qui est la chanceliere de l'Allemagne ?"
-    print(reponse(entree))
-
-    entree = "Où est ce que se trouve la ville de Paris ? "
-    print(reponse(entree))
-
-    entree = "Où est ce que se trouve la ville de Tokyo ? "
-    print(reponse(entree))
-
-    entree = "Dans quel pays se trouve la ville de Grenoble ? "
-    print(reponse(entree))
-
-    entree = "Dans quel pays se trouve le lac Limerick ?"
-    print(reponse(entree))
-
-    entree = "Où est Le Caire ? "
-    print(reponse(entree))
+        question = "Quelle est la capitale de l'Égypte ?"
+        print(reponse(question))
     
-    entree = "Quelle est la capitale de l'Égypte ?"
-    print(reponse(entree))
-    
-    entree = "Quelle est la plus grande ville de la France ?"
-    print(reponse(entree)) 
+        question = "Quelle est la plus grande ville de la France ?"
+        print(reponse(question)) 
 
-    entree = "Quels sont les états voisins de l'Illinois ?"
-    print(reponse(entree))
+        question = "Quels sont les états autour du Kansas ?"
+        print(reponse(question))
 
-    entree = "Quels sont les états autour du Kansas ?"
-    print(reponse(entree))
-    
-    entree = "Quel est la devise de la Tchéquie ?"
-    print(reponse(entree))
+        question = "Quel est la monnaie de la France ?"
+        print(reponse(question))
 
-    entree = "Quel est la monnaie de la France ?"
-    print(reponse(entree))
+        question = "Qui a écrit le livre Frankenstein ?"
+        print(reponse(question))
 
-    entree = "Qui a écrit le livre Frankenstein ?"
-    print(reponse(entree))
+        question = "Qui a produit le jeu Mario 64 ?"
+        print(reponse(question))
 
-    entree = "Qui a écrit le livre Les Piliers de la terre ?"
-    print(reponse(entree))
-
-    entree = "Qui est le créateur de Goofy ?"
-    print(reponse(entree))
-
-    entree = "Qui a développé World of Warcraft ?"
-    print(reponse(entree))
-
-    entree = "Qui a produit le jeu Mario 64 ?"
-    print(reponse(entree))
-
-    entree = "Qui était l'épouse du président américain Lincoln ?"
-    print(reponse(entree))
-
-    entree = "A qui appartient Universal Studios ?"
-    print(reponse(entree))
-
-    entree = "Qui possède Aldi ?"
-    print(reponse(entree))
-
-    entree = "Quels prix ont été gagnés par Wikileaks ?"
-    print(reponse(entree))
-
-    entree = "Qui sont les acteurs dans le film Last Action Hero ?"
-    print(reponse(entree))
-
-    entree = "Quel est la cause de décès de Bruce Carver ?"
-    print(reponse(entree))
-
-    entree = "En quel langage de programmation a été écrit GIMP ?"
-    print(reponse(entree))
-
-    """doc = nlp(entree)
-    #print(entree)
-    PoSTagger(doc)
-    print(token(doc))
-    sortie = get_hotwords(entree)
-    print(sortie)
-    NER(doc)
-    print(type_question(doc))
-    type_question(nlp("Où est Emmanuel Macron ?"))
-    type_question(nlp("En quelle année est né Emmanuel Macron ?"))
-    print(type_question(nlp("Qui est Nicolas Sarkozy ?")))
-    NER(nlp("pont de Brooklyn"))"""
+    #question = input()
+    #print(reponse(question))
