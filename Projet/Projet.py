@@ -1,5 +1,5 @@
 # https://www.stat4decision.com/fr/traitement-langage-naturel-francais-tal-nlp/
-# Ligne de commande: "pip install spacy" + "python -m spacy download fr_core_news_lg" + "pip install bs4" + "pip install lxml" + "pip install deep-translator"
+# Ligne de commande: "pip install spacy bs4 lxml deep-translator" + "python -m spacy download fr_core_news_lg"
 # Lancer ce programme pour vérifier la bonne installation
 
 import spacy
