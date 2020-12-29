@@ -1,11 +1,12 @@
 # https://www.stat4decision.com/fr/traitement-langage-naturel-francais-tal-nlp/
-# Ligne de commande: "pip install spacy bs4 lxml deep-translator" + "python -m spacy download fr_core_news_lg"
+# Ligne de commande: "pip install spacy bs4 lxml deep-translator SpeechRecognition pyttsx3 PyAudio" + "python -m spacy download fr_core_news_lg"
 # Lancer ce programme pour vérifier la bonne installation
 
 import spacy
 import json
 import sys
 import requests
+import pathlib
 from urllib.request import urlopen
 from spacy.matcher import Matcher
 from bs4 import BeautifulSoup
@@ -247,6 +248,9 @@ def exp_reg(question):
                 return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], None), "architect")
             return concepteur
 
+        else:
+            return "Je n'ai pas compris votre recherche.\n"
+
 
 
 def query(q, epr, f='application/json'):
@@ -367,11 +371,15 @@ def requete_dbpedia_multiple(requete, predicate, entity_of_type="dbo"):
 
     return result[:-3]+'\n'
 
-#Interface graphique
-#Creating GUI with tkinter
-import tkinter
-from tkinter import *
 
+
+#Interface graphique
+
+def demarrage():
+    ChatLog.config(state=NORMAL)
+    ChatLog.insert(END, "Bot: Bonjour ! Posez moi une question, j'essaierai d'y répondre au mieux :) \n")
+    base.update_idletasks()
+    base.update()
 
 def send(msg=""):
     if not msg:
@@ -393,16 +401,85 @@ def send(msg=""):
 
         ChatLog.config(state=DISABLED)
         ChatLog.yview(END)
+        return res
 
 def affichage_reponse(question, gui=True):
-        if gui:
-            send(question)
-            base.update_idletasks()
-            base.update()
-        else:
-            print(question)
-            print(reponse(question))
+    if gui:
+        send(question)
+        base.update_idletasks()
+        base.update()
+    else:
+        print(question)
+        print(reponse(question))
+
+
+
+#Reconnaissance vocale
+def voix():
+    recognizer = sr.Recognizer()
+
+    ''' recording the sound '''
+
+    try:
+        sr.Microphone()
+    except Exception as ex:
+        ChatLog.insert(END, "Bot: Aucun microphone détécté (reconnaissance vocale): " + str(ex) + '\n')
     
+    with sr.Microphone() as source:
+        ChatLog.config(state=NORMAL)
+
+        ChatLog.insert(END, "Bot: Ajustement du niveau de bruit... veuillez patienter \n")
+        base.update_idletasks()
+        base.update()
+        recognizer.adjust_for_ambient_noise(source, duration=1)
+
+        ChatLog.insert(END, "Bot: Enregistrement en cours pour 5 secondes (posez votre question)\n")
+        ChatLog.yview(END)
+        base.update_idletasks()
+        base.update()       
+        
+        try:
+            recorded_audio = recognizer.listen(source, timeout=5)
+        except Exception as ex:
+            print(ex)
+            ChatLog.insert(END, "Bot: Erreur: " + str(ex) + '\n')
+
+        ChatLog.insert(END, "Bot: Fin de l'enregistrement\n")
+        base.update_idletasks()
+        base.update()
+
+    ''' Recorgnizing the Audio '''
+    try:
+        ChatLog.insert(END, "Bot: Reconnaissance du texte en cours...\n\n")
+        base.update_idletasks()
+        base.update()
+        question = recognizer.recognize_google(
+                recorded_audio, 
+                language="fr-FR"
+            )
+        if question=='':
+            ChatLog.insert(END, "Bot: Je n'ai pas entendu votre question, merci de répéter\n\n")
+        else:
+            parler(send(question+" ?"))
+
+
+    except Exception as ex:
+        print(ex)
+        ChatLog.insert(END, "Bot: Je n'ai pas réussi à comprendre votre question (reconnaissance vocale) " + str(ex) + '\n')
+        base.update_idletasks()
+        base.update()
+
+    
+    ChatLog.config(state=DISABLED)
+    ChatLog.yview(END)
+
+def parler(msg):
+    engine = pyttsx3.init()
+    engine.setProperty("voice", "french")
+    engine.setProperty("rate", 160)
+    engine.say(msg)
+    engine.runAndWait()
+
 
 if __name__ == '__main__':
     spacy.prefer_gpu()
@@ -410,42 +487,61 @@ if __name__ == '__main__':
 
     #Configurez True si vous souhaitez activer l'interface graphique (false sinon)
     gui = True  
+    #Configurez True si vous souhaitez activer les commandes vocales (false sinon)
+    vocal = True
 
     # Configurez True si vous souhaitez afficher des exemples de questions pré-configurés, false sinon
-    exemple_questionsxml = True #Exemples tirées du jeu de données fourni: questions.xml
+    exemple_questionsxml = False #Exemples tirées du jeu de données fourni: questions.xml
     exemple_autres = False #Autres exemples pré-configurées
 
     #Paramètre interface graphique
     if(gui):
+        import tkinter
+        from tkinter import *
+
         base = Tk()
         base.title("Système de questions-réponses en français")
         base.geometry("1400x900")
         base.resizable(width=FALSE, height=FALSE)
 
-        #Create Chat window
+        #Création de la fenêtre de chat
         ChatLog = Text(base, bd=0, bg="white", height="8", width="50", font="Calibri")
 
         ChatLog.config(state=DISABLED)
 
-        #Bind scrollbar to Chat window
+        #Barre de déroulement pour la fenêtre de chat
         scrollbar = Scrollbar(base, command=ChatLog.yview, cursor="heart")
         ChatLog['yscrollcommand'] = scrollbar.set
 
-        #Create Button to send message
+        #Bouton pour envoyer la question
         SendButton = Button(base, font=("Verdana",12,'bold'), text="Send", width="12", height=5,
                             bd=0, bg="#32de97", activebackground="#3c9d9b",fg='#ffffff',
                             command= send )
 
-        #Create the box to enter message
+        #Espace permettant d'entrer la question
         EntryBox = Text(base, bd=0, bg="white",width="29", height="5", font="Arial")
         EntryBox.bind("<KeyRelease-Return>", (lambda event: send()))
 
+        #Elements permettant la reconnaissance vocale
+        if(vocal):            
+            import speech_recognition as sr
+            import pyttsx3
+            import io
 
-        #Place all components on the screen
+            micro = PhotoImage(file=str(pathlib.Path(__file__).parent.absolute())+"\\microphone.png").subsample(15,15)
+            micro_button = Button(base, image=micro, width="150", command=voix, activebackground='#c1bfbf', bd=0)
+            micro_button.grid(row=0, column=2)
+
+
+
+        #Placer tous les élements sur l'écran
         scrollbar.place(x=1370,y=12, height=772)
         ChatLog.place(x=10,y=12, height=772, width=1355)
-        EntryBox.place(x=206, y=800, height=70, width=1000)
+        EntryBox.place(x=206, y=800, height=70, width=1100)
         SendButton.place(x=10, y=800, height=70)
+        if(vocal):
+            micro_button.place(x=1250, y=800, height=70)
+        demarrage()
 
     if(exemple_questionsxml):
         question = "Quelle cours d'eau est traversé par le pont de Brooklyn ?"
