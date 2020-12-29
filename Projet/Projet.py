@@ -475,10 +475,10 @@ def voix():
     ChatLog.yview(END)
 
 def parler(msg):
-    gTTS(text=msg, lang='fr').save("sound.mp3")
-    sound = pyglet.resource.media('sound.mp3')
+    gTTS(text=msg, lang='fr').save((os.path.dirname(os.path.realpath(__file__))+"/sound.mp3").replace('\\','/'))
+    sound = pyglet.media.load((os.path.dirname(os.path.realpath(__file__))+"/sound.mp3").replace('\\','/'))
     sound.play()
-    os.remove("sound.mp3")
+    os.remove((os.path.dirname(os.path.realpath(__file__))+"/sound.mp3").replace('\\','/'))
 
 
 
@@ -530,9 +530,9 @@ if __name__ == '__main__':
             import os
             import pyglet
             import warnings
-
+            
             warnings.filterwarnings("ignore")            
-            micro = PhotoImage(file=os.getcwd()+"/microphone.png").subsample(15,15)
+            micro = PhotoImage(file=os.path.dirname(os.path.realpath(__file__))+"/microphone.png").subsample(15,15)
             micro_button = Button(base, image=micro, width="150", command=voix, activebackground='#c1bfbf', bd=0)
             micro_button.grid(row=0, column=2)
 
