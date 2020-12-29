@@ -376,7 +376,7 @@ def requete_dbpedia_multiple(requete, predicate, entity_of_type="dbo"):
 
 def demarrage():
     ChatLog.config(state=NORMAL)
-    ChatLog.insert(END, "Bot: Bonjour ! Posez moi une question, j'essaierai d'y répondre au mieux :) \n")
+    ChatLog.insert(END, "Bot: Bonjour ! Posez moi une question, j'essaierai d'y répondre au mieux :) \n\n")
     base.update_idletasks()
     base.update()
 
@@ -492,8 +492,8 @@ if __name__ == '__main__':
     vocal = True
 
     # Configurez True si vous souhaitez afficher des exemples de questions pré-configurés, false sinon
-    exemple_questionsxml = False #Exemples tirées du jeu de données fourni: questions.xml
-    exemple_autres = False #Autres exemples pré-configurées
+    exemple_questionsxml = True #Exemples tirées du jeu de données fourni: questions.xml
+    exemple_autres = True #Autres exemples pré-configurées
 
     #Paramètre interface graphique
     if(gui):
@@ -530,7 +530,7 @@ if __name__ == '__main__':
             import os
             import pyglet
             import warnings
-            
+
             warnings.filterwarnings("ignore")            
             micro = PhotoImage(file=os.path.dirname(os.path.realpath(__file__))+"/microphone.png").subsample(15,15)
             micro_button = Button(base, image=micro, width="150", command=voix, activebackground='#c1bfbf', bd=0)
@@ -631,72 +631,74 @@ if __name__ == '__main__':
 
     if(exemple_autres):
         question = "Qui est Emmanuel Macron ?"
-        print(reponse(question))
+        affichage_reponse(question, gui)
 
         question = "Qui est Nicolas Sarkozy ?"
-        print(reponse(question))
+        affichage_reponse(question, gui)
 
         question = "Qui est Zinedine ?"
-        print(reponse(question))
+        affichage_reponse(question, gui)
     
         question = "Qui est le maire de Paris ?"
-        print(reponse(question))
+        affichage_reponse(question, gui)
 
         question = "Qui est le maire de Budapest ?"
-        print(reponse(question))
+        affichage_reponse(question, gui)
 
         question = "Qui est le maire de Lyon ?"
-        print(reponse(question))
+        affichage_reponse(question, gui)
 
         question = "Qui est le maire de Marseille ?"
-        print(reponse(question))
+        affichage_reponse(question, gui)
 
         question = "Qui est le maire de Nice ?"
-        print(reponse(question))
+        affichage_reponse(question, gui)
 
         question = "Qui est le président des USA ?"
-        print(reponse(question))
+        affichage_reponse(question, gui)
 
         question = "Qui est le président de la France ?"
-        print(reponse(question))
+        affichage_reponse(question, gui)
 
         question = "Qui est la chanceliere de l'Allemagne ?"
-        print(reponse(question))
+        affichage_reponse(question, gui)
 
         question = "Où est ce que se trouve la ville de Paris ? "
-        print(reponse(question))
+        affichage_reponse(question, gui)
 
         question = "Où est ce que se trouve la ville de Tokyo ? "
-        print(reponse(question))
+        affichage_reponse(question, gui)
 
         question = "Dans quel pays se trouve la ville de Grenoble ? "
-        print(reponse(question))
+        affichage_reponse(question, gui)
 
         question = "Dans quel pays se trouve le lac Limerick ?"
-        print(reponse(question))
+        affichage_reponse(question, gui)
 
         question = "Où est Le Caire ? "
-        print(reponse(question))
+        affichage_reponse(question, gui)
     
         question = "Quelle est la capitale de l'Égypte ?"
-        print(reponse(question))
+        affichage_reponse(question, gui)
     
         question = "Quelle est la plus grande ville de la France ?"
-        print(reponse(question)) 
+        affichage_reponse(question, gui) 
 
         question = "Quels sont les états autour du Kansas ?"
-        print(reponse(question))
+        affichage_reponse(question, gui)
 
         question = "Quel est la monnaie de la France ?"
-        print(reponse(question))
+        affichage_reponse(question, gui)
 
         question = "Qui a écrit le livre Frankenstein ?"
-        print(reponse(question))
+        affichage_reponse(question, gui)
 
         question = "Qui a produit le jeu Mario 64 ?"
-        print(reponse(question))
+        affichage_reponse(question, gui)
 
-    
-    base.mainloop()    
-    #question = input()
-    #print(reponse(question))
+    if(gui):
+        base.mainloop()
+    else:
+        while(True):           
+            question = input("Entrez votre question: ")
+            print(reponse(question))
