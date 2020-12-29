@@ -1,12 +1,11 @@
 # https://www.stat4decision.com/fr/traitement-langage-naturel-francais-tal-nlp/
-# Ligne de commande: "pip install spacy bs4 lxml deep-translator SpeechRecognition pyttsx3 PyAudio" + "python -m spacy download fr_core_news_lg"
+# Ligne de commande: "pip install spacy bs4 lxml deep-translator SpeechRecognition gtts pyglet PyAudio" + "python -m spacy download fr_core_news_lg"
 # Lancer ce programme pour vérifier la bonne installation
 
 import spacy
 import json
 import sys
 import requests
-import pathlib
 from urllib.request import urlopen
 from spacy.matcher import Matcher
 from bs4 import BeautifulSoup
@@ -398,6 +397,8 @@ def send(msg=""):
 
         res = str(reponse(msg))
         ChatLog.insert(END, "Bot: " + res + '\n\n')
+        base.update_idletasks()
+        base.update()
 
         ChatLog.config(state=DISABLED)
         ChatLog.yview(END)
@@ -460,7 +461,7 @@ def voix():
         if question=='':
             ChatLog.insert(END, "Bot: Je n'ai pas entendu votre question, merci de répéter\n\n")
         else:
-            parler(send(question+" ?"))
+            parler(send(question+" ?")[:200])
 
 
     except Exception as ex:
@@ -474,11 +475,11 @@ def voix():
     ChatLog.yview(END)
 
 def parler(msg):
-    engine = pyttsx3.init()
-    engine.setProperty("voice", "french")
-    engine.setProperty("rate", 160)
-    engine.say(msg)
-    engine.runAndWait()
+    gTTS(text=msg, lang='fr').save("sound.mp3")
+    sound = pyglet.resource.media('sound.mp3')
+    sound.play()
+    os.remove("sound.mp3")
+
 
 
 if __name__ == '__main__':
@@ -525,10 +526,13 @@ if __name__ == '__main__':
         #Elements permettant la reconnaissance vocale
         if(vocal):            
             import speech_recognition as sr
-            import pyttsx3
-            import io
+            from gtts import gTTS
+            import os
+            import pyglet
+            import warnings
 
-            micro = PhotoImage(file=str(pathlib.Path(__file__).parent.absolute())+"\\microphone.png").subsample(15,15)
+            warnings.filterwarnings("ignore")            
+            micro = PhotoImage(file=os.getcwd()+"/microphone.png").subsample(15,15)
             micro_button = Button(base, image=micro, width="150", command=voix, activebackground='#c1bfbf', bd=0)
             micro_button.grid(row=0, column=2)
 
