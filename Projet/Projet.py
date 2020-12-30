@@ -154,10 +154,12 @@ def exp_reg(question):
     pattern = [{"LOWER":{"REGEX": "voisins?|fronti[èeé]res?|autours?"}}, {"POS": "ADP", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"},{"ENT_TYPE": "LOC"}] 
     matcher.add("voisin", None, pattern)
 
-    # Recherche dans quel pays se trouve une ville ou un lieu
+    # Recherche dans quel pays se trouve une ville /un lieu /pays travérsé par une rivière,fleuve etc
     pattern = [{"LOWER": {"REGEX": "où"}}, {"POS": "AUX", "OP": "*"}, {"POS": "PRON", "OP": "*"}, {"POS": "VERB","OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"POS": "ADP", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"}, {"ENT_TYPE": "LOC"}]  # Où est ce que se trouve la ville de nomVille ? et "Où est nomVille ?"
     pattern2 = [{"LOWER": {"REGEX": "dans"}}, {"POS": "ADJ", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"POS": "PRON", "OP": "*"}, {"POS": "VERB","OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"POS": "ADP", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"}, {"ENT_TYPE": "LOC"}]  # "Dans quel pays se trouve la ville de nomVille? "
-    matcher.add("pays", None, pattern, pattern2)
+    pattern3 = [{"LOWER": {"REGEX": "quels"}}, {"POS": "AUX", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"LOWER": {"REGEX": "traversés|travers[éeè]"}},
+                {"POS": "ADP", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"}, {"POS": "PRON", "OP": "*"}]
+    matcher.add("pays", None, pattern, pattern2, pattern3)
 
     # Recherche langues pays
     pattern = [{"LOWER": {"REGEX": "langues?|parl[ée]r?e?s?"}}, {"OP": "*"}, {"ENT_TYPE": "LOC"}]
@@ -236,7 +238,7 @@ def exp_reg(question):
             elif(any(item in question.text for item in plusieurs)):
                 return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_ == "LOC"][0][0],None), "country")
             else:
-                return requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_ == "LOC"][0][0], None), "country")
+                return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_ == "LOC"][0][0], None), "country")
 
         elif(string_id=="voisin"):
             print([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0])
@@ -357,7 +359,7 @@ def json_load(requete, predicate, entity_of_type):
         ; dbpedia-owl:""" + predicate + '?' + predicate + """] .
         VALUES ?s{""" + '"' + requete + '"' + """@en }
         }
-        LIMIT 10""", "http://dbpedia.org/sparql"))
+        LIMIT 11""", "http://dbpedia.org/sparql"))
 
     if(entity_of_type == "dbp"):
         json_query = json.loads(query("""
@@ -368,7 +370,7 @@ def json_load(requete, predicate, entity_of_type):
         ; dbp:""" + predicate + '?' + predicate + """] .
         VALUES ?s{""" + '"' + requete + '"' + """@en }
         }
-        LIMIT 10""", "http://dbpedia.org/sparql"))
+        LIMIT 11""", "http://dbpedia.org/sparql"))
     return json_query
 
 
@@ -530,6 +532,8 @@ if __name__ == '__main__':
     # Configurez True si vous souhaitez afficher des exemples de questions pré-configurés, false sinon
     exemple_questionsxml = False #Exemples tirées du jeu de données fourni: questions.xml
     exemple_autres = False #Autres exemples pré-configurées
+
+
 
     # Paramètre interface graphique
     if(gui):
