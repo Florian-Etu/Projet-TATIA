@@ -474,11 +474,11 @@ WHERE {
 <keywords lang="it"><![CDATA[battaglia di Gettysburg]]></keywords>
 <keywords lang="fr"><![CDATA[bataille de Gettysburg, quand]]></keywords>
 <keywords lang="nl"><![CDATA[Slag bij Gettysburg]]></keywords>
-<query><![CDATA[PREFIX dbo: <http://dbpedia.org/ontology/>
+<query><![CDATAPREFIX dbp: <http://dbpedia.org/property/>
 PREFIX res: <http://dbpedia.org/resource/>
 SELECT DISTINCT ?date 
 WHERE { 
-       res:Battle_of_Gettysburg dbo:date ?date .
+       res:Battle_of_Gettysburg dbp:date ?date .
 }]]></query>
 <answers>
 <answer>

@@ -134,9 +134,13 @@ def exp_reg(question):
     matcher = Matcher(nlp.vocab)
 
     # Recherche d'une date
-    pattern = [{"LOWER":{"REGEX": "années?|mois|jours?|dates?"}}] #Si la question contient année ou mois ou jour ou date = date
-    pattern2 = [{"LOWER":"quand"}, {"POS": "AUX", "OP": "*"}] #Quand + auxiliaire optionnel = date
-    matcher.add("Date", None, pattern, pattern2) 
+    pattern = [{"LOWER":"quand"}, {"POS": "AUX", "OP": "*"}] #Quand + auxiliaire optionnel = date
+    matcher.add("Date", None, pattern)
+
+    # Recherche d'une date d'anniversaire
+    pattern = [{"LOWER": "quelle"}, {"POS": "AUX", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"},
+               {"POS": "ADP", "OP": "*"}, {"LOWER": {"REGEX": "naissance|naissancee"}}, {"POS": "ADP", "OP": "*"}, {"POS": "PROPN", "OP": "*"}]
+    matcher.add("birthDate", None, pattern)
 
     # Recherche d'un site web
     pattern = [{"LOWER":{"REGEX": "web|add?resse|site|accueil|page"}}, {"POS": "ADP", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"}, {"ENT_TYPE": "ORG"}]
@@ -210,6 +214,14 @@ def exp_reg(question):
         # On cherche des informations sur une personne
         if(string_id=="person"):
             return get_abstract(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="PER"][0][0], string_id)) #On execute la fonction pour faire une requete sur le nom de la personne sur laquelle on veut des informations
+
+        elif(string_id == "Date"):
+            date = requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_ == "MISC"][0][0], None), "date", "dbp")
+            return date
+
+        elif (string_id == "birthDate"):
+            date = requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_ == "PER"][0][0], None), "birthDate")
+            return date
 
         elif(string_id=="mayor"):
             mayor = requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], "city"), "leaderName")
@@ -530,8 +542,8 @@ if __name__ == '__main__':
     vocal = True
 
     # Configurez True si vous souhaitez afficher des exemples de questions pré-configurés, false sinon
-    exemple_questionsxml = False #Exemples tirées du jeu de données fourni: questions.xml
-    exemple_autres = False #Autres exemples pré-configurées
+    exemple_questionsxml = True #Exemples tirées du jeu de données fourni: questions.xml
+    exemple_autres = True #Autres exemples pré-configurées
 
 
 
@@ -673,6 +685,9 @@ if __name__ == '__main__':
         affichage_reponse(question, gui)
 
     if(exemple_autres):
+        question = "Quelle est la date de naissance de Zidane ?"
+        affichage_reponse(question, gui)
+
         question = "Qui est Emmanuel Macron ?"
         affichage_reponse(question, gui)
 
