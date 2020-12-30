@@ -98,7 +98,7 @@ WHERE {
 PREFIX res: <http://dbpedia.org/resource/>
 SELECT DISTINCT ?uri
 WHERE {       
-        res:Karakoram dbo:highestPlace ?uri .  
+        res:Karakoram dbp:highest ?uri .
 }]]></query>
 <answers>
 <answer>
@@ -221,11 +221,11 @@ WHERE {
 <keywords lang="it"><![CDATA[museo, l'Urlo, Munch]]></keywords>
 <keywords lang="fr"><![CDATA[musée, le Cri, Munch]]></keywords>
 <keywords lang="nl"><![CDATA[museum, De Schreeuw, Munch]]></keywords>
-<query><![CDATA[PREFIX dbp: <http://dbpedia.org/property/>
+<query><![CDATA[PREFIX dbp: <http://dbpedia.org/ontology/>
 PREFIX res: <http://dbpedia.org/resource/>
 SELECT DISTINCT ?uri
 WHERE {
-	res:The_Scream dbp:museum ?uri .
+	res:The_Scream dbo:museum ?uri .
 }]]></query>
 <answers>
 <answer>

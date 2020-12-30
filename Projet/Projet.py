@@ -50,6 +50,20 @@ def get_hotwords(text):
             result.append(token.text)
     return result
 
+def concatAfterSubString(string, substring, substring2):
+    string = string.split()
+    passedSubString = False
+    stringResult = ""
+    for i in range(len(string)):
+        if string[i] == substring or string[i] == substring2:
+            passedSubString = True
+            continue
+        if passedSubString:
+            stringResult += string[i] +" "
+
+    return stringResult[0:-2]
+
+
 
 def reponse(question):
     question = question.replace("l'", "l' ").replace("\n","").replace("\r","")
@@ -58,6 +72,8 @@ def reponse(question):
     prog = ["language", "langage", "programmation", "languages", "langages", "programmations", "programation", "program"]
     capital = ["capitale", "capital"]
     monnaie = ["devise", "devises", "monnaie", "monnaies"]
+    phoneCode = ["indicatif téléphonique", "téléphone","téléphonique","téléphones"]
+    hauteur = ["haut", "hauteur", "élevé", "remarquable", "hautement", "apogée", "altitude", "hautain", "remarquable"]
 
     if(len(hotwords)>=2):
 
@@ -65,6 +81,26 @@ def reponse(question):
         if (any(item in hotwords for item in capital) or ("grande" in hotwords and "ville" in hotwords)):
             capital = requete_dbpedia(lookup_keyword(hotwords[-1], "country"), "capital")
             return capital
+
+        # Recherche indicatif téléphonique d'un pays/ville
+        if(any(item in hotwords for item in phoneCode)):
+            phoneCode = requete_dbpedia(lookup_keyword(hotwords[-1], None), "areaCode")
+            if(phoneCode == "Aucun résultat correspondant à votre recherche.\n"):
+                phoneCode = requete_dbpedia(lookup_keyword(hotwords[-1], None), "callingCode", "dbp")
+            return phoneCode
+
+        # Recherche de l'endroit le plus élévé dans une montagne/lieu
+        if (any(item in hotwords for item in hauteur)):
+            highestPlace = requete_dbpedia(lookup_keyword(hotwords[-1], None), "highest", "dbp")
+            if (highestPlace == "Aucun résultat correspondant à votre recherche.\n"):
+                highestPlace = requete_dbpedia(lookup_keyword(hotwords[-1], None), "elevation")
+            if (highestPlace == "Aucun résultat correspondant à votre recherche.\n"):
+                keyWord = concatAfterSubString(question, "du", "de")
+                highestPlace = requete_dbpedia(lookup_keyword(keyWord, None), "highest", "dbp")
+            if (highestPlace == "Aucun résultat correspondant à votre recherche.\n"):
+                keyWord = concatAfterSubString(question, "du", "de")
+                highestPlace = requete_dbpedia(lookup_keyword(keyWord, None), "elevation")
+            return highestPlace
 
         # Recherche partenaire d'une personne
         if(any(item in hotwords for item in alliance)):
@@ -93,8 +129,8 @@ def reponse(question):
 
 
 def exp_reg(question):
-    #ANALYSE DU TYPE DE LA QUESTION (via expression régèlière en s'aidant de l'analyse NER):
-    #https://spacy.io/usage/rule-based-matching
+    # ANALYSE DU TYPE DE LA QUESTION (via expression régèlière en s'aidant de l'analyse NER):
+    # https://spacy.io/usage/rule-based-matching
     matcher = Matcher(nlp.vocab)
 
     # Recherche d'une date
@@ -160,6 +196,7 @@ def exp_reg(question):
     pattern = [{"LOWER": {"REGEX": "employ[éeè]|employée|employés|employées|employees"}}, {"POS": "AUX", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"} , {"POS": "NOUN", "OP": "*"}]
     matcher.add("employeesNumber", None, pattern)
 
+
     matches = matcher(question)
     # Traitement selon type de la question
     for match_id, start, end in matches:
@@ -182,10 +219,10 @@ def exp_reg(question):
                         return requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], "settlement", False), string_id)                            
             return mayor
         
-        elif(string_id=="Leader_pays"):
+        elif(string_id == "Leader_pays"):
             return requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], "country"), "leader")
 
-        elif(string_id=="website"):
+        elif(string_id == "website"):
             return requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="ORG"][0][0], None), "wikiPageExternalLink")
 
         elif(string_id == "pays"):
@@ -205,7 +242,7 @@ def exp_reg(question):
             print([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0])
             return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], "PopulatedPlace"), "borderingstates", "dbp")
         
-        elif(string_id=="createur"):
+        elif(string_id == "createur"):
             auteur = requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="MISC"][0][0], None), "developer")
             if(auteur == "Aucun résultat correspondant à votre recherche.\n" ):
                 auteur = requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="MISC"][0][0], None), "author")
@@ -251,7 +288,6 @@ def exp_reg(question):
 
         else:
             return "Je n'ai pas compris votre recherche.\n"
-
 
 
 def query(q, epr, f='application/json'):
@@ -416,8 +452,7 @@ def affichage_reponse(question, gui=True):
         print(reponse(question))
 
 
-
-#Reconnaissance vocale
+# Reconnaissance vocale
 def voix():
     recognizer = sr.Recognizer()
 
@@ -451,7 +486,7 @@ def voix():
         base.update_idletasks()
         base.update()
 
-    ''' Recorgnizing the Audio '''
+    ''' Recognizing the Audio '''
     try:
         ChatLog.insert(END, "Bot: Reconnaissance du texte en cours...\n\n")
         base.update_idletasks()
@@ -465,7 +500,6 @@ def voix():
         else:
             parler(send(question+" ?")[:200])
 
-
     except Exception as ex:
         print(ex)
         ChatLog.insert(END, "Bot: Je n'ai pas réussi à comprendre votre question (reconnaissance vocale) " + str(ex) + '\n')
@@ -476,6 +510,7 @@ def voix():
     ChatLog.config(state=DISABLED)
     ChatLog.yview(END)
 
+
 def parler(msg):
     gTTS(text=msg, lang='fr').save((os.path.dirname(os.path.realpath(__file__))+"/sound.mp3").replace('\\','/'))
     sound = pyglet.media.load((os.path.dirname(os.path.realpath(__file__))+"/sound.mp3").replace('\\','/'))
@@ -483,13 +518,12 @@ def parler(msg):
     os.remove((os.path.dirname(os.path.realpath(__file__))+"/sound.mp3").replace('\\','/'))
 
 
-
 if __name__ == '__main__':
     spacy.prefer_gpu()
     nlp = spacy.load("fr_core_news_lg")
 
     #Configurez True si vous souhaitez activer l'interface graphique (false sinon)
-    gui = True  
+    gui = False
     #Configurez True si vous souhaitez activer les commandes vocales (false sinon)
     vocal = True
 
@@ -497,7 +531,7 @@ if __name__ == '__main__':
     exemple_questionsxml = False #Exemples tirées du jeu de données fourni: questions.xml
     exemple_autres = False #Autres exemples pré-configurées
 
-    #Paramètre interface graphique
+    # Paramètre interface graphique
     if(gui):
         import tkinter
         from tkinter import *
