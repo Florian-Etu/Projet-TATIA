@@ -6,6 +6,7 @@ import spacy
 import json
 import sys
 import requests
+import os
 from urllib.request import urlopen
 from spacy.matcher import Matcher
 from bs4 import BeautifulSoup
@@ -502,6 +503,10 @@ if __name__ == '__main__':
 
         base = Tk()
         base.title("Système de questions-réponses en français")
+        try:
+            base.iconbitmap((os.path.dirname(os.path.realpath(__file__))+"/icone.ico").replace('\\','/'))
+        except Exception as e:
+            print("L'icone ne peut pas être affiché: " + str(e))
         base.geometry("1400x900")
         base.resizable(width=FALSE, height=FALSE)
 
@@ -527,12 +532,11 @@ if __name__ == '__main__':
         if(vocal):            
             import speech_recognition as sr
             from gtts import gTTS
-            import os
             import pyglet
             import warnings
 
             warnings.filterwarnings("ignore")            
-            micro = PhotoImage(file=os.path.dirname(os.path.realpath(__file__))+"/microphone.png").subsample(15,15)
+            micro = PhotoImage(file=(os.path.dirname(os.path.realpath(__file__))+"/microphone.png").replace('\\','/')).subsample(15,15)
             micro_button = Button(base, image=micro, width="150", command=voix, activebackground='#c1bfbf', bd=0)
             micro_button.grid(row=0, column=2)
 
