@@ -74,6 +74,7 @@ def reponse(question):
     monnaie = ["devise", "devises", "monnaie", "monnaies"]
     phoneCode = ["indicatif téléphonique", "téléphone","téléphonique","téléphones"]
     hauteur = ["haut", "hauteur", "élevé", "remarquable", "hautement", "apogée", "altitude", "hautain", "remarquable"]
+    museum = ["musée","musé","musées"]
 
     if(len(hotwords)>=2):
 
@@ -88,6 +89,12 @@ def reponse(question):
             if(phoneCode == "Aucun résultat correspondant à votre recherche.\n"):
                 phoneCode = requete_dbpedia(lookup_keyword(hotwords[-1], None), "callingCode", "dbp")
             return phoneCode
+
+        # Recherche dans quelle musée est exposé une oeuvre d'art
+        if (any(item in hotwords for item in museum)):
+            keyWord = concatAfterSubString(question, "exposé", "présenté")
+            museum = requete_dbpedia(lookup_keyword(keyWord, None), "museum")
+            return museum
 
         # Recherche de l'endroit le plus élévé dans une montagne/lieu
         if (any(item in hotwords for item in hauteur)):
@@ -558,7 +565,6 @@ if __name__ == '__main__':
     exemple_questionsxml = True #Exemples tirées du jeu de données fourni: questions.xml
     exemple_autres = True #Autres exemples pré-configurées
 
-
     # Paramètre interface graphique
     if(gui):
         import tkinter
@@ -694,6 +700,9 @@ if __name__ == '__main__':
         affichage_reponse(question, gui)
 
     if(exemple_autres):
+        question = "Dans quel musée est exposé la joconde ?"
+        affichage_reponse(question, gui)
+
         question = "Quelle cours d'eau est traversé par le pont de golden gate ?"
         affichage_reponse(question, gui)
 
