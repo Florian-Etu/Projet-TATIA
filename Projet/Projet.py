@@ -229,7 +229,9 @@ def exp_reg(question):
             return get_abstract(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="PER"][0][0], string_id)) #On execute la fonction pour faire une requete sur le nom de la personne sur laquelle on veut des informations
 
         elif string_id == "Date":
-            date = requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_ == "MISC"][0][0], None), "date", "dbp")
+            date = requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_ == "MISC"][0][0], "SocietalEvent"), "date")
+            if(date == "Aucun résultat correspondant à votre recherche.\n" ):
+                return requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_ == "MISC"][0][0], None), "date", "dbp")
             return date
 
         elif string_id == "birthDate":
@@ -695,15 +697,6 @@ if __name__ == '__main__':
         affichage_reponse(question, gui)
 
     if exemple_autres:
-        question = "Dans quel musée est exposé la joconde ?"
-        affichage_reponse(question, gui)
-
-        question = "Quelle cours d'eau est traversé par le pont de golden gate ?"
-        affichage_reponse(question, gui)
-
-        question = "Quelle est la date de naissance de Zidane ?"
-        affichage_reponse(question, gui)
-
         question = "Qui est Emmanuel Macron ?"
         affichage_reponse(question, gui)
 
@@ -711,6 +704,12 @@ if __name__ == '__main__':
         affichage_reponse(question, gui)
 
         question = "Qui est Zinedine ?"
+        affichage_reponse(question, gui)
+
+        question = "Quelle est la date de naissance de Zidane ?"
+        affichage_reponse(question, gui)
+        
+        question = "Dans quel musée est exposé la joconde ?"
         affichage_reponse(question, gui)
     
         question = "Qui est le maire de Paris ?"
@@ -768,6 +767,9 @@ if __name__ == '__main__':
         affichage_reponse(question, gui)
 
         question = "Qui a écrit le livre Frankenstein ?"
+        affichage_reponse(question, gui)
+
+        question = "Quand se déroula la bataille de Verdun ?"
         affichage_reponse(question, gui)
 
         question = "Qui a produit le jeu Mario 64 ?"
