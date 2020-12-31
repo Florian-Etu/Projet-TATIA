@@ -98,15 +98,15 @@ def reponse(question):
 
         # Recherche de l'endroit le plus élévé dans une montagne/lieu
         if (any(item in hotwords for item in hauteur)):
-            highestPlace = requete_dbpedia(lookup_keyword(hotwords[-1], None), "highest", "dbp")
+            highestPlace = requete_dbpedia(lookup_keyword(hotwords[-1], "Place"), "highest", "dbp")
             if (highestPlace == "Aucun résultat correspondant à votre recherche.\n"):
-                highestPlace = requete_dbpedia(lookup_keyword(hotwords[-1], None), "elevation")
-            if (highestPlace == "Aucun résultat correspondant à votre recherche.\n"):
-                keyWord = concatAfterSubString(question, "du", "de")
-                highestPlace = requete_dbpedia(lookup_keyword(keyWord, None), "highest", "dbp")
+                highestPlace = requete_dbpedia(lookup_keyword(hotwords[-1], "Place"), "elevation")
             if (highestPlace == "Aucun résultat correspondant à votre recherche.\n"):
                 keyWord = concatAfterSubString(question, "du", "de")
-                highestPlace = requete_dbpedia(lookup_keyword(keyWord, None), "elevation")
+                highestPlace = requete_dbpedia(lookup_keyword(keyWord, "Place"), "highest", "dbp")
+            if (highestPlace == "Aucun résultat correspondant à votre recherche.\n"):
+                keyWord = concatAfterSubString(question, "du", "de")
+                highestPlace = requete_dbpedia(lookup_keyword(keyWord, "Place"), "elevation")
             return highestPlace
 
         # Recherche partenaire d'une personne
@@ -239,7 +239,7 @@ def exp_reg(question):
         elif (string_id == "crossed"):
             if(question.ents == ()):
                 keyWord = concatAfterSubString(question.text, "le", "la")
-                crossed = requete_dbpedia(lookup_keyword(keyWord, None), "crosses")
+                crossed = requete_dbpedia(lookup_keyword(keyWord, "Place"), "crosses")
             else:
                 crossed = requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_ == "LOC"][0][0], None), "crosses")
             return crossed
@@ -586,13 +586,13 @@ if __name__ == '__main__':
     nlp = spacy.load("fr_core_news_lg")
 
     #Configurez True si vous souhaitez activer l'interface graphique (false sinon)
-    gui = True
+    gui = False
     #Configurez True si vous souhaitez activer les commandes vocales (false sinon)
     vocal = True
 
     # Configurez True si vous souhaitez afficher des exemples de questions pré-configurés, false sinon
-    exemple_questionsxml = True #Exemples tirées du jeu de données fourni: questions.xml
-    exemple_autres = True #Autres exemples pré-configurées
+    exemple_questionsxml = False #Exemples tirées du jeu de données fourni: questions.xml
+    exemple_autres = False #Autres exemples pré-configurées
 
     # Paramètre interface graphique
     if(gui):
