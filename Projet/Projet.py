@@ -165,6 +165,12 @@ def exp_reg(question):
                 {"POS": "ADP", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"}, {"POS": "PRON", "OP": "*"}]
     matcher.add("pays", None, pattern, pattern2, pattern3)
 
+    # Recherche quelle élement(ex:cours d'eau) est traversée par un autre élément(ex:pont)
+    pattern = [{"LOWER": "quelle"}, {"POS": "NOUN", "OP": "*"}, {"POS": "ADP", "OP": "*"}, {"POS": "NOUN", "OP": "*"},
+               {"POS": "AUX", "OP": "*"}, {"LOWER": {"REGEX": "travers[éeè]"}}, {"POS": "ADP", "OP": "*"},
+               {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"POS": "ADP", "OP": "*"}, {"POS": "PROPN", "OP": "*"}]
+    matcher.add("crossed", None, pattern)
+
     # Recherche langues pays
     pattern = [{"LOWER": {"REGEX": "langues?|parl[ée]r?e?s?"}}, {"OP": "*"}, {"ENT_TYPE": "LOC"}]
     matcher.add("langue", None, pattern)
@@ -222,6 +228,14 @@ def exp_reg(question):
         elif (string_id == "birthDate"):
             date = requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_ == "PER"][0][0], None), "birthDate")
             return date
+
+        elif (string_id == "crossed"):
+            if(question.ents == ()):
+                keyWord = concatAfterSubString(question.text, "le", "la")
+                crossed = requete_dbpedia(lookup_keyword(keyWord, None), "crosses")
+            else:
+                crossed = requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_ == "LOC"][0][0], None), "crosses")
+            return crossed
 
         elif(string_id=="mayor"):
             mayor = requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], "city"), "leaderName")
@@ -542,9 +556,8 @@ if __name__ == '__main__':
     vocal = True
 
     # Configurez True si vous souhaitez afficher des exemples de questions pré-configurés, false sinon
-    exemple_questionsxml = True #Exemples tirées du jeu de données fourni: questions.xml
-    exemple_autres = True #Autres exemples pré-configurées
-
+    exemple_questionsxml = False #Exemples tirées du jeu de données fourni: questions.xml
+    exemple_autres = False #Autres exemples pré-configurées
 
 
     # Paramètre interface graphique
@@ -685,6 +698,9 @@ if __name__ == '__main__':
         affichage_reponse(question, gui)
 
     if(exemple_autres):
+        question = "Quelle cours d'eau est traversé par le pont de golden gate ?"
+        affichage_reponse(question, gui)
+
         question = "Quelle est la date de naissance de Zidane ?"
         affichage_reponse(question, gui)
 
