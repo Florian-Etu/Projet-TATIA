@@ -14,6 +14,7 @@ from collections import Counter
 from string import punctuation
 from deep_translator import GoogleTranslator
 
+#PARTIE 1 : Système de questions / réponses
 def token(doc):
     # Tokeniser la phrase
     # Retourner le texte de chaque token
@@ -93,8 +94,7 @@ def reponse(question):
         # Recherche dans quelle musée est exposé une oeuvre d'art
         if (any(item in hotwords for item in museum)):
             keyWord = concatAfterSubString(question, "exposé", "présenté")
-            museum = requete_dbpedia(lookup_keyword(keyWord, None), "museum")
-            return museum
+            return requete_dbpedia_multiple(lookup_keyword(keyWord, "Artwork"), "museum")
 
         # Recherche de l'endroit le plus élévé dans une montagne/lieu
         if (any(item in hotwords for item in hauteur)):
@@ -158,7 +158,7 @@ def exp_reg(question):
     matcher.add("mayor", None, pattern)
 
     # Recherche leader d'un pays
-    pattern = [{"LOWER":{"REGEX": "pr[ée]sidents?|maires?|chefs?|dirigeant|roi|renne|chancelier|chanceli[eè]re|ministre"}}, {"POS": "ADP", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"}, {"ENT_TYPE": "LOC"}]  # "maire de...", "président de la..."
+    pattern = [{"LOWER":{"REGEX": "pr[ée]sidents?|maires?|chefs?|dirigeante?s?|roi|rei?n?ne|chanceli[eè]re?s?|ministres?"}}, {"POS": "ADP", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"}, {"ENT_TYPE": "LOC"}]  # "maire de...", "président de la..."
     matcher.add("Leader_pays", None, pattern)
 
     # Recherche voisins
@@ -168,13 +168,13 @@ def exp_reg(question):
     # Recherche dans quel pays se trouve une ville /un lieu /pays travérsé par une rivière,fleuve etc
     pattern = [{"LOWER": {"REGEX": "où"}}, {"POS": "AUX", "OP": "*"}, {"POS": "PRON", "OP": "*"}, {"POS": "VERB","OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"POS": "ADP", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"}, {"ENT_TYPE": "LOC"}]  # Où est ce que se trouve la ville de nomVille ? et "Où est nomVille ?"
     pattern2 = [{"LOWER": {"REGEX": "dans"}}, {"POS": "ADJ", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"POS": "PRON", "OP": "*"}, {"POS": "VERB","OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"POS": "ADP", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"}, {"ENT_TYPE": "LOC"}]  # "Dans quel pays se trouve la ville de nomVille? "
-    pattern3 = [{"LOWER": {"REGEX": "quels"}}, {"POS": "AUX", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"LOWER": {"REGEX": "traversés|travers[éeè]"}},
+    pattern3 = [{"LOWER": {"REGEX": "quels"}}, {"POS": "AUX", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"LOWER": {"REGEX": "travers[éeè]e?s?"}},
                 {"POS": "ADP", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"}, {"POS": "PRON", "OP": "*"}]
     matcher.add("pays", None, pattern, pattern2, pattern3)
 
     # Recherche quelle élement(ex:cours d'eau) est traversée par un autre élément(ex:pont)
     pattern = [{"LOWER": "quelle"}, {"POS": "NOUN", "OP": "*"}, {"POS": "ADP", "OP": "*"}, {"POS": "NOUN", "OP": "*"},
-               {"POS": "AUX", "OP": "*"}, {"LOWER": {"REGEX": "travers[éeè]"}}, {"POS": "ADP", "OP": "*"},
+               {"POS": "AUX", "OP": "*"}, {"LOWER": {"REGEX": "travers[éeè]e?r?s?"}}, {"POS": "ADP", "OP": "*"},
                {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"POS": "ADP", "OP": "*"}, {"POS": "PROPN", "OP": "*"}]
     matcher.add("crossed", None, pattern)
 
@@ -444,13 +444,45 @@ def requete_dbpedia_multiple(requete, predicate, entity_of_type="dbo"):
 
 
 
-#Interface graphique
+#PARTIE 2: Interface graphique
 
-def demarrage():
+def demarrage_gui(isVocalEnabled=True):
+    base = Tk()
+    base.title("Système de questions-réponses en français")
+    try:
+        base.iconbitmap((os.path.dirname(os.path.realpath(__file__))+"/icone.ico").replace('\\','/'))
+    except Exception as e:
+        print("L'icone ne peut pas être affiché: " + str(e))
+    base.geometry("1400x900")
+    base.resizable(width=FALSE, height=FALSE)
+
+    #Création de la fenêtre de chat
+    ChatLog = Text(base, bd=0, bg="white", height="8", width="50", font="Calibri")
+
+    ChatLog.config(state=DISABLED)
+
+    #Barre de déroulement pour la fenêtre de chat
+    scrollbar = Scrollbar(base, command=ChatLog.yview, cursor="diamond_cross")
+    ChatLog['yscrollcommand'] = scrollbar.set
+
+    #Bouton pour envoyer la question
+    SendButton = Button(base, font=("Verdana",12,'bold'), text="Send", width="12", height=5,
+                        bd=0, bg="#32de97", activebackground="#3c9d9b",fg='#ffffff',
+                        command= send )
+
+    #Espace permettant d'entrer la question
+    EntryBox = Text(base, bd=0, bg="white",width="29", height="5", font="Arial")
+    EntryBox.bind("<KeyRelease-Return>", (lambda event: send()))
+    #Placer tous les élements sur l'écran
+    scrollbar.place(x=1370,y=12, height=772)
+    ChatLog.place(x=10,y=12, height=772, width=1355)
+    EntryBox.place(x=206, y=800, height=70, width=1100)
+    SendButton.place(x=10, y=800, height=70)
     ChatLog.config(state=NORMAL)
     ChatLog.insert(END, "Bot: Bonjour ! Posez moi une question, j'essaierai d'y répondre au mieux :) \n\n")
     base.update_idletasks()
     base.update()
+    return base, ChatLog, EntryBox
 
 def send(msg=""):
     if not msg:
@@ -485,13 +517,10 @@ def affichage_reponse(question, gui=True):
         print(question)
         print(reponse(question))
 
-
-# Reconnaissance vocale
+#PARTIE 3: Reconnaissance vocale
 def voix():
     recognizer = sr.Recognizer()
-
     ''' recording the sound '''
-
     try:
         sr.Microphone()
     except Exception as ex:
@@ -569,36 +598,10 @@ if __name__ == '__main__':
     if(gui):
         import tkinter
         from tkinter import *
+        base, ChatLog, EntryBox = demarrage_gui(vocal)
+        #Activation de la reconnaissance vocale
 
-        base = Tk()
-        base.title("Système de questions-réponses en français")
-        try:
-            base.iconbitmap((os.path.dirname(os.path.realpath(__file__))+"/icone.ico").replace('\\','/'))
-        except Exception as e:
-            print("L'icone ne peut pas être affiché: " + str(e))
-        base.geometry("1400x900")
-        base.resizable(width=FALSE, height=FALSE)
-
-        #Création de la fenêtre de chat
-        ChatLog = Text(base, bd=0, bg="white", height="8", width="50", font="Calibri")
-
-        ChatLog.config(state=DISABLED)
-
-        #Barre de déroulement pour la fenêtre de chat
-        scrollbar = Scrollbar(base, command=ChatLog.yview, cursor="diamond_cross")
-        ChatLog['yscrollcommand'] = scrollbar.set
-
-        #Bouton pour envoyer la question
-        SendButton = Button(base, font=("Verdana",12,'bold'), text="Send", width="12", height=5,
-                            bd=0, bg="#32de97", activebackground="#3c9d9b",fg='#ffffff',
-                            command= send )
-
-        #Espace permettant d'entrer la question
-        EntryBox = Text(base, bd=0, bg="white",width="29", height="5", font="Arial")
-        EntryBox.bind("<KeyRelease-Return>", (lambda event: send()))
-
-        #Elements permettant la reconnaissance vocale
-        if(vocal):            
+        if(vocal):
             import speech_recognition as sr
             from gtts import gTTS
             import pyglet
@@ -608,17 +611,7 @@ if __name__ == '__main__':
             micro = PhotoImage(file=(os.path.dirname(os.path.realpath(__file__))+"/microphone.png").replace('\\','/')).subsample(15,15)
             micro_button = Button(base, image=micro, width="150", command=voix, activebackground='#c1bfbf', bd=0)
             micro_button.grid(row=0, column=2)
-
-
-
-        #Placer tous les élements sur l'écran
-        scrollbar.place(x=1370,y=12, height=772)
-        ChatLog.place(x=10,y=12, height=772, width=1355)
-        EntryBox.place(x=206, y=800, height=70, width=1100)
-        SendButton.place(x=10, y=800, height=70)
-        if(vocal):
             micro_button.place(x=1250, y=800, height=70)
-        demarrage()
 
     if(exemple_questionsxml):
         question = "Quelle cours d'eau est traversé par le pont de Brooklyn ?"
