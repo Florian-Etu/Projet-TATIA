@@ -267,7 +267,6 @@ def exp_reg(question):
                 return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_ == "LOC"][0][0], None), "country")
 
         elif(string_id=="voisin"):
-            print([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0])
             return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], "PopulatedPlace"), "borderingstates", "dbp")
         
         elif(string_id == "createur"):
@@ -368,7 +367,7 @@ def get_abstract(requete):
         FILTER langMatches(lang(?abstract),"en")
         VALUES ?name {""" + '"' + requete + '"' + """@en }
         }
-        LIMIT 10""","http://dbpedia.org/sparql"))
+        LIMIT 15""","http://dbpedia.org/sparql"))
 
     if(not json_query["results"]["bindings"]):
         return "Aucun résultat correspondant à votre recherche.\n"
@@ -396,7 +395,7 @@ def json_load(requete, predicate, entity_of_type):
         ; dbp:""" + predicate + '?' + predicate + """] .
         VALUES ?s{""" + '"' + requete + '"' + """@en }
         }
-        LIMIT 11""", "http://dbpedia.org/sparql"))
+        LIMIT 15""", "http://dbpedia.org/sparql"))
     return json_query
 
 
@@ -551,13 +550,13 @@ if __name__ == '__main__':
     nlp = spacy.load("fr_core_news_lg")
 
     #Configurez True si vous souhaitez activer l'interface graphique (false sinon)
-    gui = False
+    gui = True
     #Configurez True si vous souhaitez activer les commandes vocales (false sinon)
     vocal = True
 
     # Configurez True si vous souhaitez afficher des exemples de questions pré-configurés, false sinon
-    exemple_questionsxml = False #Exemples tirées du jeu de données fourni: questions.xml
-    exemple_autres = False #Autres exemples pré-configurées
+    exemple_questionsxml = True #Exemples tirées du jeu de données fourni: questions.xml
+    exemple_autres = True #Autres exemples pré-configurées
 
 
     # Paramètre interface graphique
@@ -580,7 +579,7 @@ if __name__ == '__main__':
         ChatLog.config(state=DISABLED)
 
         #Barre de déroulement pour la fenêtre de chat
-        scrollbar = Scrollbar(base, command=ChatLog.yview, cursor="heart")
+        scrollbar = Scrollbar(base, command=ChatLog.yview, cursor="diamond_cross")
         ChatLog['yscrollcommand'] = scrollbar.set
 
         #Bouton pour envoyer la question
@@ -623,9 +622,6 @@ if __name__ == '__main__':
         affichage_reponse(question, gui)
 
         question = "Dans quel pays commence le Nil ?"
-        affichage_reponse(question, gui)
-
-        question = "Dans quel pays se trouve le Nil ?"
         affichage_reponse(question, gui)
 
         question = "Quel est l'endroit le plus haut du Karakoram ?"
@@ -747,6 +743,9 @@ if __name__ == '__main__':
         affichage_reponse(question, gui)
 
         question = "Dans quel pays se trouve le lac Limerick ?"
+        affichage_reponse(question, gui)        
+
+        question = "Dans quel pays se trouve le Nil ?"
         affichage_reponse(question, gui)
 
         question = "Où est Le Caire ? "
