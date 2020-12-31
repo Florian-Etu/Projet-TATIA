@@ -240,6 +240,8 @@ def exp_reg(question):
             if(question.ents == ()):
                 keyWord = concatAfterSubString(question.text, "le", "la")
                 crossed = requete_dbpedia(lookup_keyword(keyWord, "Place"), "crosses")
+                if crossed == "Aucun résultat correspondant à votre recherche.\n" :
+                    crossed = requete_dbpedia(lookup_keyword(keyWord, None), "crosses")
             else:
                 crossed = requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_ == "LOC"][0][0], None), "crosses")
             return crossed
