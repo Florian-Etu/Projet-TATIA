@@ -45,9 +45,9 @@ def get_hotwords(text):
     pos_tag = ['PROPN', 'ADJ', 'NOUN'] 
     doc = nlp(text.lower()) 
     for token in doc:
-        if(token.text in nlp.Defaults.stop_words or token.text in punctuation):
+        if (token.text in nlp.Defaults.stop_words or token.text in punctuation):
             continue
-        if(token.pos_ in pos_tag):
+        if (token.pos_ in pos_tag):
             result.append(token.text)
     return result
 
@@ -77,27 +77,27 @@ def reponse(question):
     hauteur = ["haut", "hauteur", "élevé", "remarquable", "hautement", "apogée", "altitude", "hautain", "remarquable"]
     museum = ["musée","musé","musées"]
 
-    if(len(hotwords)>=2):
+    if len(hotwords)>=2:
 
         # Recherche de la capital d'un pays
-        if (any(item in hotwords for item in capital) or ("grande" in hotwords and "ville" in hotwords)):
+        if any(item in hotwords for item in capital) or ("grande" in hotwords and "ville" in hotwords):
             capital = requete_dbpedia(lookup_keyword(hotwords[-1], "country"), "capital")
             return capital
 
         # Recherche indicatif téléphonique d'un pays/ville
-        if(any(item in hotwords for item in phoneCode)):
+        if any(item in hotwords for item in phoneCode):
             phoneCode = requete_dbpedia(lookup_keyword(hotwords[-1], None), "areaCode")
             if(phoneCode == "Aucun résultat correspondant à votre recherche.\n"):
                 phoneCode = requete_dbpedia(lookup_keyword(hotwords[-1], None), "callingCode", "dbp")
             return phoneCode
 
         # Recherche dans quelle musée est exposé une oeuvre d'art
-        if (any(item in hotwords for item in museum)):
+        if any(item in hotwords for item in museum):
             keyWord = concatAfterSubString(question, "exposé", "présenté")
             return requete_dbpedia_multiple(lookup_keyword(keyWord, "Artwork"), "museum")
 
         # Recherche de l'endroit le plus élévé dans une montagne/lieu
-        if (any(item in hotwords for item in hauteur)):
+        if any(item in hotwords for item in hauteur):
             highestPlace = requete_dbpedia(lookup_keyword(hotwords[-1], "Place"), "highest", "dbp")
             if (highestPlace == "Aucun résultat correspondant à votre recherche.\n"):
                 highestPlace = requete_dbpedia(lookup_keyword(hotwords[-1], "Place"), "elevation")
@@ -110,7 +110,7 @@ def reponse(question):
             return highestPlace
 
         # Recherche partenaire d'une personne
-        if(any(item in hotwords for item in alliance)):
+        if any(item in hotwords for item in alliance):
             partenaire = requete_dbpedia(lookup_keyword(hotwords[-1], "person"), "spouse")
             if(partenaire == "Aucun résultat correspondant à votre recherche.\n" ):
                 partenaire = requete_dbpedia(lookup_keyword(hotwords[-1], "person"), "partner")
@@ -125,11 +125,11 @@ def reponse(question):
             return partenaire
 
         # Recherche language de programmation d'un logiciel
-        if(any(item in hotwords for item in prog)):
+        if any(item in hotwords for item in prog):
             return requete_dbpedia_multiple(lookup_keyword(hotwords[-1], "software"), "programmingLanguage")
 
         # Recherche devise / monnaie d'un pays
-        if(any(item in hotwords for item in monnaie)):
+        if any(item in hotwords for item in monnaie):
             return requete_dbpedia_multiple(lookup_keyword(hotwords[-1], "country"), "currency")
 
     return exp_reg(nlp(question))
@@ -225,18 +225,18 @@ def exp_reg(question):
         # print(match_id, string_id, start, end, span.text)
 
         # On cherche des informations sur une personne
-        if(string_id=="person"):
+        if string_id=="person":
             return get_abstract(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="PER"][0][0], string_id)) #On execute la fonction pour faire une requete sur le nom de la personne sur laquelle on veut des informations
 
-        elif(string_id == "Date"):
+        elif string_id == "Date":
             date = requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_ == "MISC"][0][0], None), "date", "dbp")
             return date
 
-        elif (string_id == "birthDate"):
+        elif string_id == "birthDate":
             date = requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_ == "PER"][0][0], None), "birthDate")
             return date
 
-        elif (string_id == "crossed"):
+        elif string_id == "crossed":
             if(question.ents == ()):
                 keyWord = concatAfterSubString(question.text, "le", "la")
                 crossed = requete_dbpedia(lookup_keyword(keyWord, "Place"), "crosses")
@@ -244,7 +244,7 @@ def exp_reg(question):
                 crossed = requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_ == "LOC"][0][0], None), "crosses")
             return crossed
 
-        elif(string_id=="mayor"):
+        elif string_id=="mayor":
             mayor = requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], "city"), "leaderName")
             if(mayor == "Aucun résultat correspondant à votre recherche.\n" ):
                 mayor =  requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], "city"), string_id)
@@ -254,13 +254,13 @@ def exp_reg(question):
                         return requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], "settlement", False), string_id)                            
             return mayor
         
-        elif(string_id == "Leader_pays"):
+        elif string_id == "Leader_pays":
             return requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], "country"), "leader")
 
-        elif(string_id == "website"):
+        elif string_id == "website":
             return requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="ORG"][0][0], None), "wikiPageExternalLink")
 
-        elif(string_id == "pays"):
+        elif string_id == "pays":
             if("lac" in question.text):
                 return requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_ == "LOC"][0][0], "lake"), "country")
 
@@ -273,10 +273,10 @@ def exp_reg(question):
             else:
                 return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_ == "LOC"][0][0], None), "country")
 
-        elif(string_id=="voisin"):
+        elif string_id=="voisin":
             return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], "PopulatedPlace"), "borderingstates", "dbp")
         
-        elif(string_id == "createur"):
+        elif string_id == "createur":
             auteur = requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="MISC"][0][0], None), "developer")
             if(auteur == "Aucun résultat correspondant à votre recherche.\n" ):
                 auteur = requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="MISC"][0][0], None), "author")
@@ -284,39 +284,39 @@ def exp_reg(question):
                     return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="MISC"][0][0], None), "creator")
             return auteur
 
-        elif(string_id == "employeesNumber"):
+        elif string_id == "employeesNumber":
             employeesNumber = requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="ORG"][0][0], None), "numberOfEmployees")
             return employeesNumber
 
-        elif(string_id=="appartenance"):
+        elif string_id=="appartenance":
             recherche = [(ent.text, ent.label_) for ent in question.ents if ent.label_=="ORG"]
-            if(len(recherche)<1):
+            if len(recherche)<1:
                 recherche = [(ent.text, ent.label_) for ent in question.ents if ent.label_=="MISC"]
             recherche=lookup_keyword(recherche[0][0], None)
             fondateur = requete_dbpedia_multiple(recherche, "owner")
-            if(fondateur == "Aucun résultat correspondant à votre recherche.\n" ):
+            if fondateur == "Aucun résultat correspondant à votre recherche.\n" :
                 fondateur = requete_dbpedia_multiple(recherche, "founders", "dbp")
-                if(fondateur == "Aucun résultat correspondant à votre recherche.\n" ):
+                if fondateur == "Aucun résultat correspondant à votre recherche.\n":
                     fondateur = requete_dbpedia_multiple(recherche, "keyPerson")
-                    if(fondateur == "Aucun résultat correspondant à votre recherche.\n" ):        
+                    if fondateur == "Aucun résultat correspondant à votre recherche.\n":        
                         return requete_dbpedia_multiple(recherche, "keyPeople", "dbp")
             return fondateur
 
-        elif(string_id=="awards"):
+        elif string_id=="awards":
             return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="ORG"][0][0], "work"), string_id, "dbp")
 
-        elif(string_id=="acteur"):
+        elif string_id=="acteur":
             return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="MISC"][0][0], None), "starring")
 
-        elif(string_id=="deces"):
+        elif string_id=="deces":
             return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="PER"][0][0], "person"), "deathCause")
 
-        elif(string_id=="langue"):
+        elif string_id=="langue":
             return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], "country"), "officialLanguage")
         
-        elif(string_id=="concepteur"):
+        elif string_id=="concepteur":
             concepteur = requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], None), "designer", "dbp")
-            if(concepteur == "Aucun résultat correspondant à votre recherche.\n" ):
+            if concepteur == "Aucun résultat correspondant à votre recherche.\n" :
                 return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], None), "architect")
             return concepteur
 
@@ -339,9 +339,9 @@ def query(q, epr, f='application/json'):
 def lookup_keyword(requete, type, translate=True):
     #On traduit la requete pour la recherche avec le service lookup (qui ne prend en charge que l'anglais)
     requete_translated = requete
-    if(translate):
+    if translate:
         requete_translated = GoogleTranslator(source='fr', target='en').translate(requete) 
-    if(type):
+    if type:
         #xml_content = urlopen("https://lookup.dbpedia.org/api/search/KeywordSearch?QueryClass=" + type + "&QueryString="+requete_translated.replace(" ","%20")).read()
         xml_content = urlopen("http://akswnc7.informatik.uni-leipzig.de/lookup/api/search?label=" + requete_translated.replace(" ","%20") + "&typeName="+type).read()
     else:
@@ -364,7 +364,7 @@ def get_abstract(requete):
         LIMIT 10""","http://dbpedia.org/sparql"))
 
     #Dans le cas où l'on n'obtient aucun résultat en français on renvoi le résultat anglais
-    if(not json_query["results"]["bindings"]):
+    if not json_query["results"]["bindings"]:
         json_query = json.loads(query("""prefix dbpedia: <http://dbpedia.org/resource/>
         prefix dbpedia-owl: <http://dbpedia.org/ontology/>
         SELECT DISTINCT ?abstract WHERE { 
@@ -376,7 +376,7 @@ def get_abstract(requete):
         }
         LIMIT 15""","http://dbpedia.org/sparql"))
 
-    if(not json_query["results"]["bindings"]):
+    if not json_query["results"]["bindings"]:
         return "Aucun résultat correspondant à votre recherche.\n"
     
     return json_query["results"]["bindings"][0]["abstract"]["value"]+'\n'
@@ -393,7 +393,7 @@ def json_load(requete, predicate, entity_of_type):
         }
         LIMIT 11""", "http://dbpedia.org/sparql"))
 
-    if(entity_of_type == "dbp"):
+    if entity_of_type == "dbp":
         json_query = json.loads(query("""
         prefix dbpedia: <http://dbpedia.org/resource/>
         prefix dbp: <http://dbpedia.org/property/>
@@ -409,14 +409,14 @@ def json_load(requete, predicate, entity_of_type):
 def requete_dbpedia(requete, predicate, entity_of_type="dbo"):
     json_query = json_load(requete, predicate, entity_of_type)
 
-    if(not json_query["results"]["bindings"]):
+    if not json_query["results"]["bindings"]:
         return "Aucun résultat correspondant à votre recherche.\n"
 
-    if(not json_query["results"]["bindings"][0][predicate]["value"].startswith("http://dbpedia.org")):
+    if not json_query["results"]["bindings"][0][predicate]["value"].startswith("http://dbpedia.org"):
         return json_query["results"]["bindings"][0][predicate]["value"] + '\n'
 
     json_result=json.loads(query("""SELECT ?label WHERE {<""" + json_query["results"]["bindings"][0][predicate]["value"] + """> rdfs:label ?label. FILTER langMatches(lang(?label),"fr")}""", "http://dbpedia.org/sparql"))
-    if(json_result["results"]["bindings"]):
+    if json_result["results"]["bindings"]:
         return json_result["results"]["bindings"][0]["label"]["value"]+'\n'
     else:
         return json_query["results"]["bindings"][0][predicate]["value"].replace("http://dbpedia.org/resource/", "").replace("_", " ") + '\n'
@@ -426,16 +426,16 @@ def requete_dbpedia_multiple(requete, predicate, entity_of_type="dbo"):
     result = ""
     json_query = json_load(requete, predicate, entity_of_type)
 
-    if(not json_query["results"]["bindings"]):
+    if not json_query["results"]["bindings"]:
         return "Aucun résultat correspondant à votre recherche.\n"
 
     for resultats_requete in json_query["results"]["bindings"]:
-        if(not resultats_requete[predicate]["value"].startswith("http://dbpedia.org")):
+        if not resultats_requete[predicate]["value"].startswith("http://dbpedia.org"):
             result+=resultats_requete[predicate]["value"] + " et "
             continue
 
         json_result = json.loads(query("""SELECT ?label WHERE {<""" + resultats_requete[predicate]["value"] + """> rdfs:label ?label. FILTER langMatches(lang(?label),"fr")}""", "http://dbpedia.org/sparql"))
-        if(json_result["results"]["bindings"]):
+        if json_result["results"]["bindings"]:
             result += json_result["results"]["bindings"][0]["label"]["value"]+ " et "
         else:
             result += resultats_requete[predicate]["value"].replace("http://dbpedia.org/resource/", "").replace("_", " ") + " et "
@@ -586,22 +586,22 @@ if __name__ == '__main__':
     nlp = spacy.load("fr_core_news_lg")
 
     #Configurez True si vous souhaitez activer l'interface graphique (false sinon)
-    gui = False
+    gui = True
     #Configurez True si vous souhaitez activer les commandes vocales (false sinon)
     vocal = True
 
     # Configurez True si vous souhaitez afficher des exemples de questions pré-configurés, false sinon
-    exemple_questionsxml = False #Exemples tirées du jeu de données fourni: questions.xml
-    exemple_autres = False #Autres exemples pré-configurées
+    exemple_questionsxml = True #Exemples tirées du jeu de données fourni: questions.xml
+    exemple_autres = True #Autres exemples pré-configurées
 
     # Paramètre interface graphique
-    if(gui):
+    if gui:
         import tkinter
         from tkinter import *
         base, ChatLog, EntryBox = demarrage_gui(vocal)
         #Activation de la reconnaissance vocale
 
-        if(vocal):
+        if vocal:
             import speech_recognition as sr
             from gtts import gTTS
             import pyglet
@@ -613,7 +613,7 @@ if __name__ == '__main__':
             micro_button.grid(row=0, column=2)
             micro_button.place(x=1250, y=800, height=70)
 
-    if(exemple_questionsxml):
+    if exemple_questionsxml:
         question = "Quelle cours d'eau est traversé par le pont de Brooklyn ?"
         affichage_reponse(question, gui)
 
@@ -692,7 +692,7 @@ if __name__ == '__main__':
         question = "Quel est la cause de décès de Bruce Carver ?"
         affichage_reponse(question, gui)
 
-    if(exemple_autres):
+    if exemple_autres:
         question = "Dans quel musée est exposé la joconde ?"
         affichage_reponse(question, gui)
 
@@ -771,9 +771,9 @@ if __name__ == '__main__':
         question = "Qui a produit le jeu Mario 64 ?"
         affichage_reponse(question, gui)
 
-    if(gui):
+    if gui:
         base.mainloop()
     else:
-        while(True):           
+        while True:           
             question = input("Entrez votre question: ")
             print(reponse(question))
