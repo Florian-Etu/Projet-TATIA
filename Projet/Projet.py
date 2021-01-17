@@ -607,13 +607,13 @@ if __name__ == '__main__':
     nlp = spacy.load("fr_core_news_lg")
 
     #Configurez True si vous souhaitez activer l'interface graphique (false sinon)
-    gui = False
+    gui = True
     #Configurez True si vous souhaitez activer les commandes vocales (false sinon)
-    vocal = False
+    vocal = True
 
     # Configurez True si vous souhaitez afficher des exemples de questions pré-configurés, false sinon
-    exemple_questionsxml = False #Exemples tirées du jeu de données fourni: questions.xml
-    exemple_autres = False #Autres exemples pré-configurées
+    exemple_questionsxml = True #Exemples tirées du jeu de données fourni: questions.xml
+    exemple_autres = True #Autres exemples pré-configurées
 
     # Paramètre interface graphique
     if gui:
@@ -656,7 +656,7 @@ if __name__ == '__main__':
         question = "Qui est le maire de New York City ?"
         affichage_reponse(question, gui)
 
-        question = "Quels sont les pays traversés par l'Ienisseï ?"
+        question = "Quels sont les pays traversés par l'Amazone ?"
         affichage_reponse(question, gui)
 
         question = "Dans quel musée est exposé Le Cri de Munch ?"
