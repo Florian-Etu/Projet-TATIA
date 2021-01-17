@@ -189,11 +189,12 @@ def exp_reg(question):
 
     # Recherche gagnant de prix
     pattern = [{"LOWER": {"REGEX": "gagn[ée]e?s?r?"}}, {"OP": "*"}, {"ENT_TYPE": "ORG"}]
-    matcher.add("awards", None, pattern)
+    pattern2 = [{"LOWER": {"REGEX": "gagn[ée]e?s?r?"}}, {"OP": "*"}, {"ENT_TYPE": "PER"}]
+    matcher.add("awards", None, pattern, pattern2)
 
     # Recherche d'un créateur / auteur / développeur
     pattern = [{"LOWER": {"REGEX": "cr[ée]ateure?s?|cr[ée]atrice|auteure?|autrice|[ée]crite?|invent[ée]e?|inventeure?|inventeuse|livres?|d[ée]velop?pée?|d[ée]velop?per|d[ée]veloppeur?s?e?s?|cr[ée]é?e?r?|produits?|jeux?|videos?|vid[ée]os?"}}, {"OP": "*"}, {"ENT_TYPE": "MISC"}]
-    matcher.add("createur", None, pattern, pattern2)
+    matcher.add("createur", None, pattern)
 
     # Recherche de concepteur / designer
     pattern = [{"LOWER": {"REGEX": "con[çc]ue?s?|design[ée]e?s?|dessin[ée]e?r?s?|construit?e?s?|constructions?"}}, {"POS": "DET", "OP": "*"}, {"ENT_TYPE": "LOC"}]
@@ -285,9 +286,9 @@ def exp_reg(question):
         
         elif string_id == "createur":
             auteur = requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="MISC"][0][0], None), "developer")
-            if(auteur == "Aucun résultat correspondant à votre recherche.\n" ):
+            if auteur == "Aucun résultat correspondant à votre recherche.\n":
                 auteur = requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="MISC"][0][0], None), "author")
-                if(auteur == "Aucun résultat correspondant à votre recherche.\n" ):
+                if auteur == "Aucun résultat correspondant à votre recherche.\n":
                     return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="MISC"][0][0], None), "creator")
             return auteur
 
@@ -310,7 +311,14 @@ def exp_reg(question):
             return fondateur
 
         elif string_id=="awards":
-            return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="ORG"][0][0], "work"), string_id, "dbp")
+            recherche = [(ent.text, ent.label_) for ent in question.ents if ent.label_=="PER"]
+            if len(recherche)<1:
+                recherche = [(ent.text, ent.label_) for ent in question.ents if ent.label_=="ORG"]
+                recherche=lookup_keyword(recherche[0][0], "work")
+                return requete_dbpedia_multiple(recherche, string_id, "dbp")
+            recherche=lookup_keyword(recherche[0][0], "person")
+            print(recherche)
+            return requete_dbpedia_multiple(recherche, "award")
 
         elif string_id=="acteur":
             return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="MISC"][0][0], None), "starring")
@@ -595,13 +603,13 @@ if __name__ == '__main__':
     nlp = spacy.load("fr_core_news_lg")
 
     #Configurez True si vous souhaitez activer l'interface graphique (false sinon)
-    gui = False
+    gui = True
     #Configurez True si vous souhaitez activer les commandes vocales (false sinon)
-    vocal = False
+    vocal = True
 
     # Configurez True si vous souhaitez afficher des exemples de questions pré-configurés, false sinon
-    exemple_questionsxml = False #Exemples tirées du jeu de données fourni: questions.xml
-    exemple_autres = False #Autres exemples pré-configurées
+    exemple_questionsxml = True #Exemples tirées du jeu de données fourni: questions.xml
+    exemple_autres = True #Autres exemples pré-configurées
 
     # Paramètre interface graphique
     if gui:
@@ -689,8 +697,8 @@ if __name__ == '__main__':
         question = "Quel est la site web de Forbes ?"
         affichage_reponse(question, gui)
 
-        question = "Quels prix ont été gagnés par Wikileaks ?"
-        affichage_reponse(question, gui)
+        #question = "Quels prix ont été gagnés par Edward Snowden ?"
+        #affichage_reponse(question, gui)
 
         question = "Donne-moi tous les acteurs jouant dans le film Last Action Hero."
         affichage_reponse(question, gui)
