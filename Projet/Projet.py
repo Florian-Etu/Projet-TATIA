@@ -262,7 +262,7 @@ def exp_reg(question):
         elif string_id == "Leader_pays":
             leader_pays = requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], "country"), "leader")
             if leader_pays == "Aucun résultat correspondant à votre recherche.\n":
-                return requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], "country"), "leaderName", "dbp")
+                return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], "country"), "leaderName", "dbp")
             return leader_pays
 
         elif string_id == "website":
@@ -317,7 +317,6 @@ def exp_reg(question):
                 recherche=lookup_keyword(recherche[0][0], "work")
                 return requete_dbpedia_multiple(recherche, string_id, "dbp")
             recherche=lookup_keyword(recherche[0][0], "person")
-            print(recherche)
             return requete_dbpedia_multiple(recherche, "award")
 
         elif string_id=="acteur":
@@ -434,8 +433,6 @@ def requete_dbpedia(requete, predicate, entity_of_type="dbo"):
     if json_result["results"]["bindings"]:
         return json_result["results"]["bindings"][0]["label"]["value"]+'\n'
     else:
-        if(predicate=="leaderName" and len(json_query["results"]["bindings"])>0):
-            return json_query["results"]["bindings"][-1][predicate]["value"].replace("http://dbpedia.org/resource/", "").replace("_", " ") + '\n'
         return json_query["results"]["bindings"][0][predicate]["value"].replace("http://dbpedia.org/resource/", "").replace("_", " ") + '\n'
 
 
@@ -697,17 +694,17 @@ if __name__ == '__main__':
         question = "Quel est la site web de Forbes ?"
         affichage_reponse(question, gui)
 
-        #question = "Quels prix ont été gagnés par Edward Snowden ?"
-        #affichage_reponse(question, gui)
+        question = "Quels prix ont été gagnés par Edward Snowden ?"
+        affichage_reponse(question, gui)
 
         question = "Donne-moi tous les acteurs jouant dans le film Last Action Hero."
         affichage_reponse(question, gui)
 
-        question = "A qui appartient Universal Studios ?"
+        question = "A qui appartient Universal Pictures ?"
         affichage_reponse(question, gui)
 
-        question = "Quel est la cause de décès de Bruce Carver ?"
-        affichage_reponse(question, gui)
+        #question = "Quel est la cause de décès de Bruce Carver ?"
+        #affichage_reponse(question, gui)
 
     if exemple_autres:
         question = "Qui est Emmanuel Macron ?"
