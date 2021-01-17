@@ -239,7 +239,7 @@ def exp_reg(question):
             return date
 
         elif string_id == "crossed":
-            if(question.ents == ()):
+            if question.ents == ():
                 keyWord = concatAfterSubString(question.text, "le", "la")
                 crossed = requete_dbpedia(lookup_keyword(keyWord, "Place"), "crosses")
                 if crossed == "Aucun résultat correspondant à votre recherche.\n" :
@@ -249,17 +249,20 @@ def exp_reg(question):
             return crossed
 
         elif string_id=="mayor":
-            mayor = requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], "city"), "leaderName")
-            if(mayor == "Aucun résultat correspondant à votre recherche.\n" ):
+            mayor = requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], "city"), "leaderName", "dbp")
+            if mayor == "Aucun résultat correspondant à votre recherche.\n":
                 mayor =  requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], "city"), string_id)
-                if(mayor == "Aucun résultat correspondant à votre recherche.\n"):
+                if mayor == "Aucun résultat correspondant à votre recherche.\n":
                     mayor =  requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], "settlement"), string_id)
-                    if(mayor == "Aucun résultat correspondant à votre recherche.\n"):
+                    if mayor == "Aucun résultat correspondant à votre recherche.\n":
                         return requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], "settlement", False), string_id)                            
             return mayor
         
         elif string_id == "Leader_pays":
-            return requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], "country"), "leader")
+            leader_pays = requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], "country"), "leader")
+            if leader_pays == "Aucun résultat correspondant à votre recherche.\n":
+                return requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], "country"), "leaderName", "dbp")
+            return leader_pays
 
         elif string_id == "website":
             return requete_dbpedia(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="ORG"][0][0], None), "wikiPageExternalLink")
@@ -423,6 +426,8 @@ def requete_dbpedia(requete, predicate, entity_of_type="dbo"):
     if json_result["results"]["bindings"]:
         return json_result["results"]["bindings"][0]["label"]["value"]+'\n'
     else:
+        if(predicate=="leaderName" and len(json_query["results"]["bindings"])>0):
+            return json_query["results"]["bindings"][-1][predicate]["value"].replace("http://dbpedia.org/resource/", "").replace("_", " ") + '\n'
         return json_query["results"]["bindings"][0][predicate]["value"].replace("http://dbpedia.org/resource/", "").replace("_", " ") + '\n'
 
 
@@ -590,13 +595,13 @@ if __name__ == '__main__':
     nlp = spacy.load("fr_core_news_lg")
 
     #Configurez True si vous souhaitez activer l'interface graphique (false sinon)
-    gui = True
+    gui = False
     #Configurez True si vous souhaitez activer les commandes vocales (false sinon)
-    vocal = True
+    vocal = False
 
     # Configurez True si vous souhaitez afficher des exemples de questions pré-configurés, false sinon
-    exemple_questionsxml = True #Exemples tirées du jeu de données fourni: questions.xml
-    exemple_autres = True #Autres exemples pré-configurées
+    exemple_questionsxml = False #Exemples tirées du jeu de données fourni: questions.xml
+    exemple_autres = False #Autres exemples pré-configurées
 
     # Paramètre interface graphique
     if gui:
@@ -616,7 +621,7 @@ if __name__ == '__main__':
             micro_button = Button(base, image=micro, width="150", command=voix, activebackground='#c1bfbf', bd=0)
             micro_button.grid(row=0, column=2)
             micro_button.place(x=1250, y=800, height=70)
-
+            
     if exemple_questionsxml:
         question = "Quelle cours d'eau est traversé par le pont de Brooklyn ?"
         affichage_reponse(question, gui)
