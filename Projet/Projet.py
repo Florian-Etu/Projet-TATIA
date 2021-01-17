@@ -170,7 +170,8 @@ def exp_reg(question):
     pattern2 = [{"LOWER": {"REGEX": "dans"}}, {"POS": "ADJ", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"POS": "PRON", "OP": "*"}, {"POS": "VERB","OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"POS": "ADP", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"}, {"ENT_TYPE": "LOC"}]  # "Dans quel pays se trouve la ville de nomVille? "
     pattern3 = [{"LOWER": {"REGEX": "quels"}}, {"POS": "AUX", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"LOWER": {"REGEX": "travers[éeè]e?s?"}},
                 {"POS": "ADP", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"}, {"POS": "PRON", "OP": "*"}]
-    matcher.add("pays", None, pattern, pattern2, pattern3)
+    pattern4 = [{"LOWER": {"REGEX": "où"}}, {"OP": "*"}, {"LOWER": {"REGEX": "trouve"}}, {"POS": "VERB","OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"POS": "ADP", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"}, {"ENT_TYPE": "LOC"}]  # Où est-ce que se trouve la ville de nomVille ? et "Où est nomVille ?"
+    matcher.add("pays", None, pattern, pattern2, pattern3,pattern4)
 
     # Recherche quelle élement(ex:cours d'eau) est traversée par un autre élément(ex:pont)
     pattern = [{"LOWER": "quelle"}, {"POS": "NOUN", "OP": "*"}, {"POS": "ADP", "OP": "*"}, {"POS": "NOUN", "OP": "*"},
@@ -274,10 +275,16 @@ def exp_reg(question):
 
             plusieurs = ["quelles","quels","sont","quel"] #quel peut etre utiliser pour representer plusieurs pays(dans quel pays se trouve ... :le résultat peut etre plusieurs pays)
             existance = ["commence", "source", "origine"]
+            traversed = ["traversé","traversée","traversés"]
             if (any(item in question.text for item in existance)):
-                return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_ == "LOC"][0][0], None),"sourceCountry")
+                return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_ == "LOC"][0][0], None),"source","dbp")
+            elif (any(item in question.text for item in traversed)):
+                return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_ == "LOC"][0][0],"River"), "mouthPlace")
             elif(any(item in question.text for item in plusieurs)):
-                return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_ == "LOC"][0][0],None), "country")
+                if (requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_ == "LOC"][0][0],None), "country") == "Aucun résultat correspondant à votre recherche.\n"):
+                    return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_ == "LOC"][0][0],None), "source1Location", "dbp")
+                else:
+                    return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_ == "LOC"][0][0],None), "country")
             else:
                 return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_ == "LOC"][0][0], None), "country")
 
@@ -326,7 +333,7 @@ def exp_reg(question):
             return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="PER"][0][0], "person"), "deathCause")
 
         elif string_id=="langue":
-            return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], "country"), "officialLanguage")
+            return requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], "country"), "language")
         
         elif string_id=="concepteur":
             concepteur = requete_dbpedia_multiple(lookup_keyword([(ent.text, ent.label_) for ent in question.ents if ent.label_=="LOC"][0][0], None), "designer", "dbp")
@@ -600,13 +607,13 @@ if __name__ == '__main__':
     nlp = spacy.load("fr_core_news_lg")
 
     #Configurez True si vous souhaitez activer l'interface graphique (false sinon)
-    gui = True
+    gui = False
     #Configurez True si vous souhaitez activer les commandes vocales (false sinon)
-    vocal = True
+    vocal = False
 
     # Configurez True si vous souhaitez afficher des exemples de questions pré-configurés, false sinon
-    exemple_questionsxml = True #Exemples tirées du jeu de données fourni: questions.xml
-    exemple_autres = True #Autres exemples pré-configurées
+    exemple_questionsxml = False #Exemples tirées du jeu de données fourni: questions.xml
+    exemple_autres = False #Autres exemples pré-configurées
 
     # Paramètre interface graphique
     if gui:
@@ -626,7 +633,7 @@ if __name__ == '__main__':
             micro_button = Button(base, image=micro, width="150", command=voix, activebackground='#c1bfbf', bd=0)
             micro_button.grid(row=0, column=2)
             micro_button.place(x=1250, y=800, height=70)
-            
+
     if exemple_questionsxml:
         question = "Quelle cours d'eau est traversé par le pont de Brooklyn ?"
         affichage_reponse(question, gui)
