@@ -200,7 +200,8 @@ SELECT DISTINCT ?uri
 WHERE {
         res:Yenisei_River dbo:country ?uri .
 }]]></query>
-<answers>
+    Quels sont les pays traversés par l'Ienisseï ?
+    <answers>
 <answer>
 <uri>http://dbpedia.org/resource/Mongolia</uri>
 </answer>

@@ -142,28 +142,28 @@ def exp_reg(question):
 
     # Recherche d'une date
     pattern = [{"LOWER":"quand"}, {"POS": "AUX", "OP": "*"}] #Quand + auxiliaire optionnel = date
-    matcher.add("Date", None, pattern)
+    matcher.add("Date", [pattern])
 
     # Recherche d'une date d'anniversaire
     pattern = [{"LOWER": "quelle"}, {"POS": "AUX", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"},
                {"POS": "ADP", "OP": "*"}, {"LOWER": {"REGEX": "naissance|naissancee"}}, {"POS": "ADP", "OP": "*"}, {"POS": "PROPN", "OP": "*"}]
-    matcher.add("birthDate", None, pattern)
+    matcher.add("birthDate", [pattern])
 
     # Recherche d'un site web
     pattern = [{"LOWER":{"REGEX": "web|add?resse|site|accueil|page"}}, {"POS": "ADP", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"}, {"ENT_TYPE": "ORG"}]
-    matcher.add("website", None, pattern) 
+    matcher.add("website", [pattern])
 
     # Recherche leader d'une ville
     pattern = [{"LOWER":{"REGEX": "maire"}}, {"POS": "ADP", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"}, {"ENT_TYPE": "LOC"}]
-    matcher.add("mayor", None, pattern)
+    matcher.add("mayor", [pattern])
 
     # Recherche leader d'un pays
     pattern = [{"LOWER":{"REGEX": "pr[ée]sidents?|maires?|chefs?|dirigeante?s?|roi|rei?n?ne|chanceli[eè]re?s?|ministres?"}}, {"POS": "ADP", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"}, {"ENT_TYPE": "LOC"}]  # "maire de...", "président de la..."
-    matcher.add("Leader_pays", None, pattern)
+    matcher.add("Leader_pays", [pattern])
 
     # Recherche voisins
     pattern = [{"LOWER":{"REGEX": "voisins?|fronti[èeé]res?|autours?"}}, {"POS": "ADP", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"},{"ENT_TYPE": "LOC"}] 
-    matcher.add("voisin", None, pattern)
+    matcher.add("voisin", [pattern])
 
     # Recherche dans quel pays se trouve une ville /un lieu /pays travérsé par une rivière,fleuve etc
     pattern = [{"LOWER": {"REGEX": "où"}}, {"POS": "AUX", "OP": "*"}, {"POS": "PRON", "OP": "*"}, {"POS": "VERB","OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"POS": "ADP", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"}, {"ENT_TYPE": "LOC"}]  # Où est ce que se trouve la ville de nomVille ? et "Où est nomVille ?"
@@ -171,51 +171,51 @@ def exp_reg(question):
     pattern3 = [{"LOWER": {"REGEX": "quels"}}, {"POS": "AUX", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"LOWER": {"REGEX": "travers[éeè]e?s?"}},
                 {"POS": "ADP", "OP": "*"}, {"POS": "DET", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"}, {"POS": "PRON", "OP": "*"}]
     pattern4 = [{"LOWER": {"REGEX": "où"}}, {"OP": "*"}, {"LOWER": {"REGEX": "trouve"}}, {"POS": "VERB","OP": "*"}, {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"POS": "ADP", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"}, {"ENT_TYPE": "LOC"}]  # Où est-ce que se trouve la ville de nomVille ? et "Où est nomVille ?"
-    matcher.add("pays", None, pattern, pattern2, pattern3,pattern4)
+    matcher.add("pays", [pattern, pattern2, pattern3,pattern4])
 
     # Recherche quelle élement(ex:cours d'eau) est traversée par un autre élément(ex:pont)
     pattern = [{"LOWER": "quelle"}, {"POS": "NOUN", "OP": "*"}, {"POS": "ADP", "OP": "*"}, {"POS": "NOUN", "OP": "*"},
                {"POS": "AUX", "OP": "*"}, {"LOWER": {"REGEX": "travers[éeè]e?r?s?"}}, {"POS": "ADP", "OP": "*"},
                {"POS": "DET", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"POS": "ADP", "OP": "*"}, {"POS": "PROPN", "OP": "*"}]
-    matcher.add("crossed", None, pattern)
+    matcher.add("crossed", [pattern])
 
     # Recherche langues pays
     pattern = [{"LOWER": {"REGEX": "langues?|parl[ée]r?e?s?"}}, {"OP": "*"}, {"ENT_TYPE": "LOC"}]
-    matcher.add("langue", None, pattern)
+    matcher.add("langue", [pattern])
 
     # Recherche d'une appartenance / possession
     pattern = [{"LOWER": {"REGEX": "poss[èe]den?t?|app?artienn?e?n?t|app?artenance|possess?ions?"}}, {"OP": "*"}, {"ENT_TYPE": "MISC"}]
     pattern2 = [{"LOWER": {"REGEX": "poss[èe]den?t?|app?artienn?e?n?t|app?artenance|possess?ions?"}}, {"OP": "*"}, {"ENT_TYPE": "ORG"}]
-    matcher.add("appartenance", None, pattern, pattern2)
+    matcher.add("appartenance", [pattern, pattern2])
 
     # Recherche gagnant de prix
     pattern = [{"LOWER": {"REGEX": "gagn[ée]e?s?r?"}}, {"OP": "*"}, {"ENT_TYPE": "ORG"}]
     pattern2 = [{"LOWER": {"REGEX": "gagn[ée]e?s?r?"}}, {"OP": "*"}, {"ENT_TYPE": "PER"}]
-    matcher.add("awards", None, pattern, pattern2)
+    matcher.add("awards", [pattern, pattern2])
 
     # Recherche d'un créateur / auteur / développeur
     pattern = [{"LOWER": {"REGEX": "cr[ée]ateure?s?|cr[ée]atrice|auteure?|autrice|[ée]crite?|invent[ée]e?|inventeure?|inventeuse|livres?|d[ée]velop?pée?|d[ée]velop?per|d[ée]veloppeur?s?e?s?|cr[ée]é?e?r?|produits?|jeux?|videos?|vid[ée]os?"}}, {"OP": "*"}, {"ENT_TYPE": "MISC"}]
-    matcher.add("createur", None, pattern)
+    matcher.add("createur", [pattern])
 
     # Recherche de concepteur / designer
     pattern = [{"LOWER": {"REGEX": "con[çc]ue?s?|design[ée]e?s?|dessin[ée]e?r?s?|construit?e?s?|constructions?"}}, {"POS": "DET", "OP": "*"}, {"ENT_TYPE": "LOC"}]
-    matcher.add("concepteur", None, pattern)
+    matcher.add("concepteur", [pattern])
 
     # Recherche d'acteurs
     pattern = [{"LOWER": {"REGEX": "acteure?s?|actrices?"}}, {"OP": "*"}, {"ENT_TYPE": "MISC"}]
-    matcher.add("acteur", None, pattern)
+    matcher.add("acteur", [pattern])
 
     # Recherche cause de décès
     pattern = [{"LOWER": {"REGEX": "d[ée]c[èée]s?|d[ée]c[ée]d[eé]e?r?|morte?s?|mourire?"}}, {"OP": "*"}, {"ENT_TYPE": "PER"}]
-    matcher.add("deces", None, pattern)
+    matcher.add("deces", [pattern])
     
     # Recherche d'une personne
     pattern = [{"LOWER": "qui"},{"POS": "AUX"}, {"ENT_TYPE": "PER"}] #QUI + AUXILIAIRE + UN NOM DE PERSONNE (éventuellement prénom + nom de famille) = ON RECHERCHE UNE PERSONNE
-    matcher.add("person", None, pattern)
+    matcher.add("person", [pattern])
 
     # Recherche du nombre d'employés d'une entreprise
     pattern = [{"LOWER": {"REGEX": "employ[éeè]|employée|employés|employées|employees"}}, {"POS": "AUX", "OP": "*"}, {"IS_PUNCT": True, "OP": "*"} , {"POS": "NOUN", "OP": "*"}]
-    matcher.add("employeesNumber", None, pattern)
+    matcher.add("employeesNumber", [pattern])
 
 
     matches = matcher(question)
